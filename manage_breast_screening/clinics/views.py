@@ -1,11 +1,9 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
-from .presenters import ClinicsPresenter, ClinicPresenter
-from .presenters import AppointmentListPresenter
-
-from .models import Clinic
 from ..participants.models import Appointment
+from .models import Clinic
+from .presenters import AppointmentListPresenter, ClinicPresenter, ClinicsPresenter
 
 
 def clinic_list(request, filter="today"):

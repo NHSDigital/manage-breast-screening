@@ -1,12 +1,13 @@
 import pytest
 from pytest_django.asserts import assertQuerySetEqual
 
-from .. import models
-from .factories import ParticipantFactory, ScreeningEpisodeFactory, AppointmentFactory
 from manage_breast_screening.clinics.tests.factories import (
     ClinicFactory,
     ClinicSlotFactory,
 )
+
+from .. import models
+from .factories import AppointmentFactory, ParticipantFactory, ScreeningEpisodeFactory
 
 
 class TestParticipant:

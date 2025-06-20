@@ -1,19 +1,19 @@
 import re
-import pytest
-
 from datetime import datetime, timezone
+
+import pytest
 from django.urls import reverse
 from playwright.sync_api import expect
 
-from manage_breast_screening.core.utils.date_formatting import format_time, format_date
+from manage_breast_screening.clinics.tests.factories import ClinicFactory
+from manage_breast_screening.core.system_test_setup import SystemTestCase
+from manage_breast_screening.core.utils.date_formatting import format_date, format_time
 from manage_breast_screening.core.utils.string_formatting import (
     format_age,
     format_nhs_number,
 )
 from manage_breast_screening.participants.models import Appointment
-from manage_breast_screening.core.system_test_setup import SystemTestCase
 from manage_breast_screening.participants.tests.factories import AppointmentFactory
-from manage_breast_screening.clinics.tests.factories import ClinicFactory
 
 
 class TestUserViewsClinicShowPage(SystemTestCase):
