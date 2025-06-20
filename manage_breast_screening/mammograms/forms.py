@@ -1,5 +1,7 @@
 from django import forms
 
+from ..participants.models import AppointmentStatus
+
 
 class ScreeningAppointmentForm(forms.Form):
     decision = forms.ChoiceField(
@@ -115,7 +117,7 @@ class AppointmentCannotGoAheadForm(forms.Form):
                 reasons_json[field_name] = value
         self.instance.stopped_reasons = reasons_json
         self.instance.reinvite = self.cleaned_data["decision"]
-        self.instance.status = self.instance.Status.ATTENDED_NOT_SCREENED
         self.instance.save()
+        self.instance.statuses.create(state=AppointmentStatus.ATTENDED_NOT_SCREENED)
 
         return self.instance

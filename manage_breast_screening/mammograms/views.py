@@ -181,11 +181,8 @@ def awaiting_images(request, id):
 
 
 @require_http_methods(["POST"])
-def check_in(request, id):
-    auditor = Auditor.from_request(request)
+def check_in(_request, id):
     appointment = get_object_or_404(Appointment, pk=id)
-
-    status = appointment.statuses.create(state=AppointmentStatus.CHECKED_IN)
-    auditor.audit_create(status)
+    appointment.statuses.create(state=AppointmentStatus.CHECKED_IN)
 
     return redirect("mammograms:start_screening", id=id)

@@ -3,6 +3,7 @@ from datetime import date
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import OuterRef, Subquery
 
 from ..core.models import BaseModel
 
@@ -115,20 +116,31 @@ class ScreeningEpisode(BaseModel):
 
 
 class AppointmentQuerySet(models.QuerySet):
+    def with_current_status(self):
+        subquery = (
+            AppointmentStatus.objects.filter(appointment=OuterRef("pk"))
+            .order_by("-created_at")
+            .values("state")[:1]
+        )
+
+        return self.annotate(current_status=subquery)
+
     def remaining(self):
-        return self.filter(
-            status__in=[
+        return self.with_current_status().filter(
+            current_status__in=[
                 AppointmentStatus.CONFIRMED,
                 AppointmentStatus.CHECKED_IN,
             ]
         )
 
     def checked_in(self):
-        return self.filter(status=AppointmentStatus.CHECKED_IN)
+        return self.with_current_status().filter(
+            current_status__in=AppointmentStatus.CHECKED_IN
+        )
 
     def complete(self):
-        return self.filter(
-            status__in=[
+        return self.with_current_status().filter(
+            current_status__in=[
                 AppointmentStatus.CANCELLED,
                 AppointmentStatus.DID_NOT_ATTEND,
                 AppointmentStatus.SCREENED,

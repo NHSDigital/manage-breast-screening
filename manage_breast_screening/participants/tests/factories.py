@@ -60,7 +60,7 @@ class AppointmentFactory(DjangoModelFactory):
 
     # Create a status by default
     statuses = RelatedFactoryList(
-        AppointmentStatusFactory, size=1, factory_related_name="statuses"
+        AppointmentStatusFactory, size=1, factory_related_name="appointment"
     )
 
     # Allow passing an explicit status
@@ -70,4 +70,6 @@ class AppointmentFactory(DjangoModelFactory):
         if not create or not extracted:
             return
 
-        obj.statuses.add(AppointmentStatusFactory.create(state=extracted, clinic=obj))
+        obj.statuses.add(
+            AppointmentStatusFactory.create(state=extracted, appointment=obj)
+        )

@@ -41,11 +41,8 @@ def clinic(request, id, filter="remaining"):
 
 
 @require_http_methods(["POST"])
-def check_in(request, id, appointment_id):
-    auditor = Auditor.from_request(request)
+def check_in(_request, id, appointment_id):
     appointment = get_object_or_404(Appointment, pk=appointment_id)
-
-    status = appointment.statuses.create(state=AppointmentStatus.CHECKED_IN)
-    auditor.audit_create(status)
+    appointment.statuses.create(state=AppointmentStatus.CHECKED_IN)
 
     return redirect("clinics:show", id=id)
