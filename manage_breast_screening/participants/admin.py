@@ -16,7 +16,7 @@ class AppointmentAdmin(admin.ModelAdmin):
         "name",
         "clinic_slot__starts_at",
         "clinic_slot__duration_in_minutes",
-        "status",
+        "statuses__state",
     ]
 
     @admin.display()
