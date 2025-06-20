@@ -8,7 +8,7 @@
 {% set ethnic_group = participant.ethnic_group  %}
 {% set ethnic_group_category = participant.ethnic_group_category %}
 {% set ethnicity_details_link %}
-  <a href="#" class="nhsuk-link">Enter ethnicity details</a>
+  <a href="{{ url('participants:edit_ethnicity', kwargs={'id': participant.id}) }}" class="nhsuk-link">Enter ethnicity details</a>
 {% endset %}
 
 {% set ethnicity_html %}

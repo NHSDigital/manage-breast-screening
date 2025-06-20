@@ -1,0 +1,61 @@
+{% extends 'layout-app.jinja' %}
+{% from 'back-link/macro.jinja' import backLink %}
+{% from 'radios/macro.jinja' import radios %}
+{% from 'button/macro.jinja' import button %}
+{% from 'input/macro.jinja' import input %}
+
+{% from 'django_form_helpers.jinja' import form_error_summary %}
+
+{% block beforeContent %}
+  {{ backLink({
+    "href": back_link.href,
+    "text": back_link.text
+  }) }}
+{% endblock beforeContent %}
+
+{% block messages %}
+  {{ form_error_summary(form) }}
+{% endblock %}
+
+{% block page_content %}
+  <div class="nhsuk-grid-row">
+    <div class="nhsuk-grid-column-full">
+      <h1 class="nhsuk-heading-l">
+        {{ heading }}
+      </h1>
+
+      <form action="{{ request.path }}" method="POST">
+        {{ csrf_input }}
+        {% for ethnic_category, ethnic_groups in form.ethnic_groups_by_category() %}
+          {% set is_first_category = loop.first %}
+          <h2 class="nhsuk-fieldset__legend--s">{{ ethnic_category }}</h2>
+          <div class="nhsuk-form-group">
+            {% set radio_items = [] %}
+            {% for ethnic_group in ethnic_groups %}
+              {% set is_first_radio = (loop.first and is_first_category) %}
+              {% do radio_items.append({
+                "id": form.ethnic_group_choice.auto_id if is_first_radio,
+                "value": ethnic_group.id,
+                "text": ethnic_group.display_name,
+              }) %}
+            {% endfor %}
+            {{ radios({
+              "name": form.ethnic_group_choice.html_name,
+              "items": radio_items,
+              "idPrefix": ethnic_category | lower | replace(' ', '_'),
+              "errorMessage": {
+                "text": "An ethnic group must be selected"
+              }
+            }) }}
+          </div>
+        {% endfor %}
+
+        <div class="nhsuk-form-group">
+          {{ button({
+            "text": "Save and continue"
+          }) }}
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock page_content %}

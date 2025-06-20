@@ -13,8 +13,9 @@ class ParticipantPresenter:
     def __init__(self, participant):
         self._participant = participant
 
+        self.id = participant.id
         self.extra_needs = participant.extra_needs
-        self.ethnic_group = participant.ethnic_group
+        # self.ethnic_group = participant.ethnic_group
         self.full_name = participant.full_name
         self.gender = participant.gender
         self.email = participant.email
@@ -23,7 +24,7 @@ class ParticipantPresenter:
         self.date_of_birth = format_date(participant.date_of_birth)
         self.age = format_age(participant.age())
         self.risk_level = sentence_case(participant.risk_level)
-        self.url = reverse("participants:show", kwargs={"pk": participant.pk})
+        self.url = reverse("participants:show", kwargs={"id": participant.id})
 
     @property
     def ethnic_group_category(self):
