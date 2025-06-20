@@ -5,8 +5,8 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from django.views.generic import FormView
 
-from manage_breast_screening.participants.models import Appointment, Participant
-
+from ..core.services.auditor import Auditor
+from ..participants.models import Appointment, AppointmentStatus, Participant
 from .forms import (
     AppointmentCannotGoAheadForm,
     AskForMedicalInformationForm,
@@ -15,28 +15,9 @@ from .forms import (
 )
 from .presenters import AppointmentPresenter, present_secondary_nav
 
-Status = Appointment.Status
-
 APPOINTMENT_CANNOT_PROCEED = "Appointment cannot proceed"
 
 logger = logging.getLogger(__name__)
-
-
-def status_color(status):
-    """
-    Color to render the status tag
-    """
-    match status:
-        case Status.CHECKED_IN:
-            return ""  # no colour will get solid dark blue
-        case Status.SCREENED:
-            return "green"
-        case (Status.DID_NOT_ATTEND, Status.CANCELLED):
-            return "red"
-        case (Status.ATTENDED_NOT_SCREENED, Status.PARTIALLY_SCREENED):
-            return "orange"
-        case _:
-            return "blue"  # default blue
 
 
 class BaseAppointmentForm(FormView):
@@ -75,9 +56,9 @@ class StartScreening(BaseAppointmentForm):
             }
         )
 
-        if appointment.status in [
-            appointment.Status.SCREENED,
-            appointment.Status.PARTIALLY_SCREENED,
+        if AppointmentStatus in [
+            AppointmentStatus.SCREENED,
+            AppointmentStatus.PARTIALLY_SCREENED,
         ]:
             context["secondary_nav_items"] = present_secondary_nav(appointment.pk)
 
@@ -201,8 +182,10 @@ def awaiting_images(request, id):
 
 @require_http_methods(["POST"])
 def check_in(request, id):
+    auditor = Auditor.from_request(request)
     appointment = get_object_or_404(Appointment, pk=id)
-    appointment.status = Appointment.Status.CHECKED_IN
-    appointment.save()
+
+    status = appointment.statuses.create(state=AppointmentStatus.CHECKED_IN)
+    auditor.audit_create(status)
 
     return redirect("mammograms:start_screening", id=id)

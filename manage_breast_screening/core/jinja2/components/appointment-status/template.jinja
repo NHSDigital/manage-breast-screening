@@ -1,29 +1,21 @@
 {% from 'components/tag/macro.jinja' import tag %}
-
-{% set show_check_in = appointment.status.is_confirmed %}
-
-<div data-event-status-container="{{ appointment.id }}" {% if show_check_in %}data-module="app-check-in"{% endif %}>
+{% set show_check_in = AppointmentStatus.is_confirmed %}
+<div data-event-status-container="{{ appointment.id }}"
+     {% if show_check_in %}data-module="app-check-in"{% endif %}>
   <span data-hide-on-submit>{{ tag({
-    "text": appointment.status.text,
-    "classes": appointment.status.classes
-  })}}</span>
-
+    "text": AppointmentStatus.text,
+    "classes": AppointmentStatus.classes
+  }) }}</span>
   {% if show_check_in %}
-  <span data-show-on-submit hidden>{{ tag({
-    "text": "Checked in",
-    "classes": "app-nowrap"
-  })}}</span>
+    <span data-show-on-submit hidden>{{ tag({"text": "Checked in", "classes": "app-nowrap"}) }}</span>
   {% endif %}
-
   {% if show_check_in %}
-      {% set action_url = check_in_url or url('mammograms:check_in', kwargs={'id': appointment.id}) %}
-      <form action="{{ action_url }}" method="post" novalidate>
+    {% set action_url = check_in_url or url('mammograms:check_in', kwargs={'id': appointment.id}) %}
+    <form action="{{ action_url }}" method="post" novalidate>
       <p class="nhsuk-u-margin-top-2 nhsuk-u-margin-bottom-0">
-        <button class="app-button--link">
-          Check in
-        </button>
+        <button class="app-button--link">Check in</button>
       </p>
       {{ csrf_input }}
-      </form>
+    </form>
   {% endif %}
 </div>

@@ -1,10 +1,8 @@
 from django.urls import reverse
 
 from ..core.utils.date_formatting import format_date, format_relative_date, format_time
-from ..participants.models import Appointment
+from ..participants.models import AppointmentStatus
 from ..participants.presenters import ParticipantPresenter
-
-Status = Appointment.Status
 
 
 def status_colour(status):
@@ -12,13 +10,16 @@ def status_colour(status):
     Color to render the status tag
     """
     match status:
-        case Status.CHECKED_IN:
+        case AppointmentStatus.CHECKED_IN:
             return ""  # no colour will get solid dark blue
-        case Status.SCREENED:
+        case AppointmentStatus.SCREENED:
             return "green"
-        case Status.DID_NOT_ATTEND | Status.CANCELLED:
+        case AppointmentStatus.DID_NOT_ATTEND | AppointmentStatus.CANCELLED:
             return "red"
-        case Status.ATTENDED_NOT_SCREENED | Status.PARTIALLY_SCREENED:
+        case (
+            AppointmentStatus.ATTENDED_NOT_SCREENED
+            | AppointmentStatus.PARTIALLY_SCREENED
+        ):
             return "orange"
         case _:
             return "blue"  # default blue
@@ -45,7 +46,7 @@ class AppointmentPresenter:
         self._appointment = appointment
         self._last_known_screening = appointment.screening_episode.previous()
 
-        self.allStatuses = Status
+        self.allStatuses = AppointmentStatus
         self.id = appointment.id
         self.clinic_slot = ClinicSlotPresenter(appointment.clinic_slot)
         self.participant = ParticipantPresenter(
@@ -62,13 +63,14 @@ class AppointmentPresenter:
 
     @property
     def status(self):
-        colour = status_colour(self._appointment.status)
+        current_status = self._appointment.current_status()
+        colour = status_colour(current_status.state)
 
         return {
             "classes": f"nhsuk-tag--{colour} app-nowrap" if colour else "app-nowrap",
-            "text": self._appointment.get_status_display(),
-            "key": self._appointment.status,
-            "is_confirmed": self._appointment.status == Status.CONFIRMED,
+            "text": current_status.get_status_display(),
+            "key": current_status.state,
+            "is_confirmed": current_status.state == AppointmentStatus.CONFIRMED,
         }
 
     @property

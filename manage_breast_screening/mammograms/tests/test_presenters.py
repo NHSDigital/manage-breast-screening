@@ -7,7 +7,11 @@ import pytest
 import time_machine
 
 from manage_breast_screening.clinics.models import ClinicSlot
-from manage_breast_screening.participants.models import Appointment, ScreeningEpisode
+from manage_breast_screening.participants.models import (
+    Appointment,
+    AppointmentStatus,
+    ScreeningEpisode,
+)
 
 from ..presenters import AppointmentPresenter, ClinicSlotPresenter
 
@@ -24,21 +28,21 @@ class TestAppointmentPresenter:
         "status, expected_classes, expected_text, expected_key, expected_is_confirmed",
         [
             (
-                Appointment.Status.CONFIRMED,
+                AppointmentStatus.CONFIRMED,
                 "nhsuk-tag--blue app-nowrap",
                 "Confirmed",
                 "CONFIRMED",
                 True,
             ),
             (
-                Appointment.Status.CHECKED_IN,
+                AppointmentStatus.CHECKED_IN,
                 "app-nowrap",
                 "Checked in",
                 "CHECKED_IN",
                 False,
             ),
             (
-                Appointment.Status.ATTENDED_NOT_SCREENED,
+                AppointmentStatus.ATTENDED_NOT_SCREENED,
                 "nhsuk-tag--orange app-nowrap",
                 "Attended not screened",
                 "ATTENDED_NOT_SCREENED",
@@ -55,10 +59,9 @@ class TestAppointmentPresenter:
         expected_key,
         expected_is_confirmed,
     ):
-        mock_appointment.status = status
-        mock_appointment.get_status_display.return_value = Appointment.STATUS_CHOICES[
-            status
-        ]
+        mock_appointment.get_current_status = AppointmentStatus(
+            state=AppointmentStatus.STATUS_CHOICES[status]
+        )
 
         result = AppointmentPresenter(mock_appointment).status
 

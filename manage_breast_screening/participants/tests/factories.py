@@ -1,6 +1,7 @@
 from datetime import date
 
-from factory.declarations import SubFactory
+from factory import post_generation
+from factory.declarations import RelatedFactoryList, SubFactory
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyChoice
 
@@ -43,9 +44,30 @@ class ScreeningEpisodeFactory(DjangoModelFactory):
     participant = SubFactory(ParticipantFactory)
 
 
+class AppointmentStatusFactory(DjangoModelFactory):
+    class Meta:
+        model = models.AppointmentStatus
+
+    appointment = None
+
+
 class AppointmentFactory(DjangoModelFactory):
     class Meta:
         model = models.Appointment
 
     clinic_slot = SubFactory(ClinicSlotFactory)
     screening_episode = SubFactory(ScreeningEpisodeFactory)
+
+    # Create a status by default
+    statuses = RelatedFactoryList(
+        AppointmentStatusFactory, size=1, factory_related_name="statuses"
+    )
+
+    # Allow passing an explicit status
+    # e.g. `current_status=AppointmentStatus.CHECKED_IN`
+    @post_generation
+    def current_status(obj, create, extracted, **kwargs):
+        if not create or not extracted:
+            return
+
+        obj.statuses.add(AppointmentStatusFactory.create(state=extracted, clinic=obj))

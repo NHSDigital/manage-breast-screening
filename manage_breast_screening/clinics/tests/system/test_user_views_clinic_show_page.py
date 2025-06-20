@@ -1,19 +1,19 @@
 import re
-import pytest
-
 from datetime import datetime, timezone
+
+import pytest
 from django.urls import reverse
 from playwright.sync_api import expect
 
-from manage_breast_screening.core.utils.date_formatting import format_time, format_date
+from manage_breast_screening.clinics.tests.factories import ClinicFactory
+from manage_breast_screening.core.system_test_setup import SystemTestCase
+from manage_breast_screening.core.utils.date_formatting import format_date, format_time
 from manage_breast_screening.core.utils.string_formatting import (
     format_age,
     format_nhs_number,
 )
-from manage_breast_screening.participants.models import Appointment
-from manage_breast_screening.core.system_test_setup import SystemTestCase
+from manage_breast_screening.participants.models import AppointmentStatus
 from manage_breast_screening.participants.tests.factories import AppointmentFactory
-from manage_breast_screening.clinics.tests.factories import ClinicFactory
 
 
 class TestUserViewsClinicShowPage(SystemTestCase):
@@ -44,7 +44,7 @@ class TestUserViewsClinicShowPage(SystemTestCase):
         self.confirmed_appointment = AppointmentFactory(
             clinic_slot__clinic=self.clinic,
             clinic_slot__starts_at=datetime.now(timezone.utc).replace(hour=9, minute=0),
-            status=Appointment.Status.CONFIRMED,
+            current_status=AppointmentStatus.CONFIRMED,
             screening_episode__participant__first_name="Janet",
             screening_episode__participant__last_name="Confirmed",
         )
@@ -53,14 +53,14 @@ class TestUserViewsClinicShowPage(SystemTestCase):
             clinic_slot__starts_at=datetime.now(timezone.utc).replace(
                 hour=9, minute=30
             ),
-            status=Appointment.Status.CHECKED_IN,
+            current_status=AppointmentStatus.CHECKED_IN,
         )
         self.screened_appointment = AppointmentFactory(
             clinic_slot__clinic=self.clinic,
             clinic_slot__starts_at=datetime.now(timezone.utc).replace(
                 hour=10, minute=45
             ),
-            status=Appointment.Status.SCREENED,
+            current_status=AppointmentStatus.SCREENED,
         )
 
     def given_i_am_on_the_clinic_list(self):
