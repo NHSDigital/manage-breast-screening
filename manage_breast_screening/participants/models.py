@@ -10,43 +10,69 @@ from ..core.models import BaseModel
 
 logger = getLogger(__name__)
 
+
 # List of ethnic groups from
 # https://design-system.service.gov.uk/patterns/equality-information/
 # This list is specific to England.
-ETHNIC_GROUPS = {
-    "White": [
-        "English, Welsh, Scottish, Northern Irish or British",
-        "Irish",
-        "Gypsy or Irish Traveller",
-        "Any other White background",
-    ],
-    "Mixed or multiple ethnic groups": [
-        "White and Black Caribbean",
-        "White and Black African",
-        "White and Asian",
-        "Any other mixed or multiple ethnic background",
-    ],
-    "Asian or Asian British": [
-        "Indian",
-        "Pakistani",
-        "Bangladeshi",
-        "Chinese",
-        "Any other Asian background",
-    ],
-    "Black, African, Caribbean or Black British": [
-        "African",
-        "Caribbean",
-        "Any other Black, African or Caribbean background",
-    ],
-    "Other ethnic group": ["Arab", "Any other ethnic group"],
-}
+class Ethnicity:
+    # fmt: off
+    DATA = {
+        "White": [
+            { "id": "english_welsh_scottish_ni_british", "display_name": "English, Welsh, Scottish, Northern Irish or British", },
+            { "id": "irish", "display_name": "Irish" },
+            { "id": "gypsy_or_irish_traveller", "display_name": "Gypsy or Irish Traveller" },
+            { "id": "any_other_white_background", "display_name": "Any other White background" },
+        ],
+        "Mixed or multiple ethnic groups": [
+            { "id": "white_and_black_caribbean", "display_name": "White and Black Caribbean" },
+            { "id": "white_and_black_african", "display_name": "White and Black African" },
+            { "id": "white_and_asian", "display_name": "White and Asian" },
+            { "id": "any_other_mixed_or_multiple_ethnic_background", "display_name": "Any other mixed or multiple ethnic background" },
+        ],
+        "Asian or Asian British": [
+            { "id": "indian", "display_name": "Indian" },
+            { "id": "pakistani", "display_name": "Pakistani" },
+            { "id": "bangladeshi", "display_name": "Bangladeshi" },
+            { "id": "chinese", "display_name": "Chinese" },
+            { "id": "any_other_asian_background", "display_name": "Any other Asian background" },
+        ],
+        "Black, African, Caribbean or Black British": [
+            { "id": "african", "display_name": "African" },
+            { "id": "caribbean", "display_name": "Caribbean" },
+            { "id": "any_other_black_african_or_caribbean_background", "display_name": "Any other Black, African or Caribbean background" },
+        ],
+        "Other ethnic group": [
+            { "id": "arab", "display_name": "Arab" },
+            { "id": "any_other_ethnic_background", "display_name": "Any other ethnic group" },
+            { "id": "prefer_not_to_say", "display_name": "Prefer not to say" },
+        ],
+    }
+    # fmt: on
+
+    @classmethod
+    def ethnic_backgrounds_with_display_names(cls):
+        choices = []
+        for _ethnic_category, ethnic_backgrounds in cls.DATA.items():
+            for ethnic_background in ethnic_backgrounds:
+                choices.append(
+                    (ethnic_background["id"], ethnic_background["display_name"])
+                )
+        return tuple(choices)
+
+    @classmethod
+    def non_specific_ethnic_backgrounds(cls):
+        return [
+            "any_other_white_background",
+            "any_other_mixed_or_multiple_ethnic_background",
+            "any_other_asian_background",
+            "any_other_black_african_or_caribbean_background",
+            "any_other_ethnic_background",
+        ]
 
 
 class Participant(BaseModel):
     PREFER_NOT_TO_SAY = "Prefer not to say"
-    ETHNIC_GROUP_CHOICES = [
-        (group, group) for groups in ETHNIC_GROUPS.values() for group in groups
-    ] + [(PREFER_NOT_TO_SAY, PREFER_NOT_TO_SAY)]
+    ETHNIC_BACKGROUND_CHOICES = Ethnicity.ethnic_backgrounds_with_display_names()
 
     first_name = models.TextField()
     last_name = models.TextField()
@@ -55,7 +81,9 @@ class Participant(BaseModel):
     phone = models.TextField()
     email = models.EmailField()
     date_of_birth = models.DateField()
-    ethnic_group = models.CharField(blank=True, null=True, choices=ETHNIC_GROUP_CHOICES)
+    ethnic_background = models.CharField(
+        blank=True, null=True, choices=ETHNIC_BACKGROUND_CHOICES
+    )
     risk_level = models.TextField()
     extra_needs = models.JSONField(null=False, default=list, blank=True)
 
@@ -73,11 +101,11 @@ class Participant(BaseModel):
         else:
             return today.year - self.date_of_birth.year - 1
 
-    def ethnic_group_category(self):
+    def ethnic_background_category(self):
         matches = [
             category
-            for category, groups in ETHNIC_GROUPS.items()
-            if self.ethnic_group in groups
+            for category, backgrounds in Ethnicity.DATA.items()
+            if self.ethnic_background in backgrounds
         ]
         return matches[0] if matches else None
 
