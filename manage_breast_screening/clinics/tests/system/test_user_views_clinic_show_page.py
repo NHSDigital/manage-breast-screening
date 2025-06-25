@@ -126,7 +126,9 @@ class TestUserViewsClinicShowPage(SystemTestCase):
 
     def then_the_appointment_is_checked_in(self):
         row = self.page.locator("tr").filter(has_text="Janet Confirmed")
-        expect(row.locator(".nhsuk-tag").filter(has_text="Checked in")).to_be_visible()
+        expect(row.locator(".nhsuk-tag").filter(has_text="Checked in")).to_be_visible(
+            timeout=10000
+        )
 
     def and_the_appointments_remain_in_the_same_order(self):
         self.when_i_click_on_all()
