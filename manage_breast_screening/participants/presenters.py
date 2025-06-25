@@ -14,7 +14,7 @@ class ParticipantPresenter:
         self._participant = participant
 
         self.extra_needs = participant.extra_needs
-        self.ethnic_group = participant.ethnic_group
+        self.ethnic_background = participant.ethnic_background
         self.full_name = participant.full_name
         self.gender = participant.gender
         self.email = participant.email
@@ -26,8 +26,8 @@ class ParticipantPresenter:
         self.url = reverse("participants:show", kwargs={"pk": participant.pk})
 
     @property
-    def ethnic_group_category(self):
-        category = self._participant.ethnic_group_category()
+    def ethnic_background_category(self):
+        category = self._participant.ethnic_background_category()
         if category:
             return category.replace("Any other", "any other")
         else:

@@ -5,17 +5,17 @@
   <span class="nhsuk-hint">({{ participant.age }})</span>
 {% endset %}
 
-{% set ethnic_group = participant.ethnic_group  %}
-{% set ethnic_group_category = participant.ethnic_group_category %}
+{% set ethnic_background = participant.ethnic_background  %}
+{% set ethnic_background_category = participant.ethnic_background_category %}
 {% set ethnicity_details_link %}
   <a href="#" class="nhsuk-link">Enter ethnicity details</a>
 {% endset %}
 
 {% set ethnicity_html %}
-  {% if ethnic_group == "Prefer not to say" %}
-    {{ ethnic_group }}
-  {% elif ethnic_group %}
-    {{ ethnic_group_category }} ({{ ethnic_group }})
+  {% if ethnic_background == "Prefer not to say" %}
+    {{ ethnic_background }}
+  {% elif ethnic_background %}
+    {{ ethnic_background_category }} ({{ ethnic_background }})
   {% else %}
     {{ ethnicity_details_link | safe }}
   {% endif %}

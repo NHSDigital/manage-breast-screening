@@ -33,14 +33,14 @@ class TestParticipantPresenter:
             ("Any other", "any other"),
         ],
     )
-    def test_ethnic_group_category(self, mock_participant, category, formatted):
-        mock_participant.ethnic_group_category.return_value = category
+    def test_ethnic_background_category(self, mock_participant, category, formatted):
+        mock_participant.ethnic_background_category.return_value = category
         result = ParticipantPresenter(mock_participant)
-        assert result.ethnic_group_category == formatted
+        assert result.ethnic_background_category == formatted
 
     def test_presented_values(self, mock_participant):
         mock_participant.extra_needs = None
-        mock_participant.ethnic_group = "Irish"
+        mock_participant.ethnic_background = "Irish"
         mock_participant.full_name = "Firstname Lastname"
         mock_participant.gender = "Female"
         mock_participant.email = "Firstname.Lastname@example.com"
@@ -54,7 +54,7 @@ class TestParticipantPresenter:
         result = ParticipantPresenter(mock_participant)
 
         assert result.extra_needs is None
-        assert result.ethnic_group == "Irish"
+        assert result.ethnic_background == "Irish"
         assert result.full_name == "Firstname Lastname"
         assert result.gender == "Female"
         assert result.email == "Firstname.Lastname@example.com"

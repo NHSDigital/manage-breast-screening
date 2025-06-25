@@ -21,8 +21,8 @@ class ParticipantFactory(DjangoModelFactory):
     phone = "07700900829"
     email = "janet.williams@example.com"
     date_of_birth = date(1959, 7, 22)
-    ethnic_group = FuzzyChoice(
-        models.Participant.ETHNIC_GROUP_CHOICES, getter=lambda c: c[0]
+    ethnic_background = FuzzyChoice(
+        models.Participant.ETHNIC_BACKGROUND_CHOICES, getter=lambda c: c[0]
     )
     risk_level = "Routine"
     extra_needs = []

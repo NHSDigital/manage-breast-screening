@@ -19,9 +19,11 @@ class TestParticipant:
             (None, None),
         ],
     )
-    def test_ethnic_group_category(self, category, group):
+    def test_ethnic_background_category(self, category, group):
         assert (
-            ParticipantFactory.build(ethnic_group=group).ethnic_group_category()
+            ParticipantFactory.build(
+                ethnic_background=group
+            ).ethnic_background_category()
             == category
         )
 
