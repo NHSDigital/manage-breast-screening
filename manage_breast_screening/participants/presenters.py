@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import Any
+
 from django.urls import reverse
 
 from ..core.utils.date_formatting import format_date, format_relative_date
@@ -7,6 +10,27 @@ from ..core.utils.string_formatting import (
     format_phone_number,
     sentence_case,
 )
+from .models import AppointmentStatus
+
+
+def status_colour(status):
+    """
+    Color to render the status tag
+    """
+    match status:
+        case AppointmentStatus.CHECKED_IN:
+            return ""  # no colour will get solid dark blue
+        case AppointmentStatus.SCREENED:
+            return "green"
+        case AppointmentStatus.DID_NOT_ATTEND | AppointmentStatus.CANCELLED:
+            return "red"
+        case (
+            AppointmentStatus.ATTENDED_NOT_SCREENED
+            | AppointmentStatus.PARTIALLY_SCREENED
+        ):
+            return "orange"
+        case _:
+            return "blue"  # default blue
 
 
 class ParticipantPresenter:
@@ -63,3 +87,45 @@ class ScreeningHistoryPresenter:
             if self._last_known_screening
             else {}
         )
+
+
+class ParticipantAppointmentsPresenter:
+    @dataclass
+    class PresentedAppointment:
+        starts_at: str
+        clinic_type: str
+        setting_name: str
+        status: dict[str, Any]
+        url: str
+
+    def __init__(self, past_appointments, upcoming_appointments):
+        self.past = [
+            self._present_appointment(appointment) for appointment in past_appointments
+        ]
+        self.upcoming = [
+            self._present_appointment(appointment)
+            for appointment in upcoming_appointments
+        ]
+
+    def _present_appointment(self, appointment):
+        clinic_slot = appointment.clinic_slot
+        clinic = clinic_slot.clinic
+        setting = clinic.setting
+
+        return self.PresentedAppointment(
+            starts_at=format_date(clinic_slot.starts_at),
+            clinic_type=clinic.get_type_display().capitalize(),
+            setting_name=sentence_case(setting.name),
+            status=self._present_status(appointment),
+            url=reverse("mammograms:start_screening", kwargs={"id": appointment.pk}),
+        )
+
+    def _present_status(self, appointment):
+        current_status = appointment.current_status
+        colour = status_colour(current_status.state)
+
+        return {
+            "classes": f"nhsuk-tag--{colour} app-nowrap" if colour else "app-nowrap",
+            "text": current_status.get_state_display(),
+            "key": current_status.state,
+        }

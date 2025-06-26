@@ -149,6 +149,12 @@ class AppointmentQuerySet(models.QuerySet):
             AppointmentStatus.ATTENDED_NOT_SCREENED,
         )
 
+    def upcoming(self):
+        return self.filter(clinic_slot__starts_at__gte=date.today())
+
+    def past(self):
+        return self.filter(clinic_slot__starts_at__lt=date.today())
+
     def for_clinic_and_filter(self, clinic, filter):
         match filter:
             case "remaining":

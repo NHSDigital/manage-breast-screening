@@ -1,3 +1,6 @@
+from datetime import datetime
+from datetime import timezone as tz
+
 import pytest
 from pytest_django.asserts import assertQuerySetEqual
 
@@ -40,7 +43,7 @@ class TestScreeningEvent:
 
 @pytest.mark.django_db
 class TestAppointment:
-    def test_appointment_filtering(self):
+    def test_state_filtering(self):
         confirmed = AppointmentFactory.create(
             current_status=models.AppointmentStatus.CONFIRMED
         )
@@ -81,6 +84,27 @@ class TestAppointment:
                 partially_screened,
                 attended_not_screened,
             },
+            ordered=False,
+        )
+
+    def test_upcoming_past_filters(self, time_machine):
+        time_machine.move_to(datetime(2025, 1, 1, 10, tzinfo=tz.utc))
+
+        # > 00:00 so counts as upcoming still
+        earlier_today = AppointmentFactory.create(starts_at=datetime(2025, 1, 1, 9))
+
+        # past
+        yesterday = AppointmentFactory.create(starts_at=datetime(2024, 12, 31, 9))
+
+        # upcoming
+        tomorrow = AppointmentFactory.create(starts_at=datetime(2025, 1, 2, 9))
+
+        assertQuerySetEqual(
+            models.Appointment.objects.past(), [yesterday], ordered=False
+        )
+        assertQuerySetEqual(
+            models.Appointment.objects.upcoming(),
+            [earlier_today, tomorrow],
             ordered=False,
         )
 

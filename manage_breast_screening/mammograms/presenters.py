@@ -4,27 +4,7 @@ from django.urls import reverse
 
 from ..core.utils.date_formatting import format_date, format_relative_date, format_time
 from ..participants.models import AppointmentStatus
-from ..participants.presenters import ParticipantPresenter
-
-
-def status_colour(status):
-    """
-    Color to render the status tag
-    """
-    match status:
-        case AppointmentStatus.CHECKED_IN:
-            return ""  # no colour will get solid dark blue
-        case AppointmentStatus.SCREENED:
-            return "green"
-        case AppointmentStatus.DID_NOT_ATTEND | AppointmentStatus.CANCELLED:
-            return "red"
-        case (
-            AppointmentStatus.ATTENDED_NOT_SCREENED
-            | AppointmentStatus.PARTIALLY_SCREENED
-        ):
-            return "orange"
-        case _:
-            return "blue"  # default blue
+from ..participants.presenters import ParticipantPresenter, status_colour
 
 
 def present_secondary_nav(id):

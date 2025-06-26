@@ -59,6 +59,15 @@ class AppointmentFactory(DjangoModelFactory):
     clinic_slot = SubFactory(ClinicSlotFactory)
     screening_episode = SubFactory(ScreeningEpisodeFactory)
 
+    @post_generation
+    def starts_at(obj, create, extracted, **kwargs):
+        if not create or not extracted:
+            return
+
+        obj.clinic_slot.starts_at = extracted
+        if create:
+            obj.clinic_slot.save()
+
     # Allow passing an explicit status
     # e.g. `current_status=AppointmentStatus.CHECKED_IN`
     @post_generation

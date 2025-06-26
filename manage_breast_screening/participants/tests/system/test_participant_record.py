@@ -1,9 +1,12 @@
 import re
+from datetime import datetime
+from datetime import timezone as tz
 
 import pytest
 from django.urls import reverse
 from playwright.sync_api import expect
 
+from manage_breast_screening.clinics.tests.factories import ClinicSlotFactory
 from manage_breast_screening.core.system_test_setup import SystemTestCase
 from manage_breast_screening.participants.tests.factories import (
     AppointmentFactory,
@@ -14,14 +17,15 @@ from manage_breast_screening.participants.tests.factories import (
 
 class TestParticipantRecord(SystemTestCase):
     @pytest.fixture(autouse=True)
-    def before(self):
+    def before(self, time_machine):
         self.participant = ParticipantFactory(first_name="Janet", last_name="Williams")
-        self.screening_episode = ScreeningEpisodeFactory(participant=self.participant)
-        self.appointment = AppointmentFactory(screening_episode=self.screening_episode)
+
+        time_machine.move_to(datetime(2025, 1, 1, 10, tzinfo=tz.utc))
 
     @pytest.mark.skip("not implemented yet")
     def test_viewing_participant_record_from_an_appointment(self):
-        self.given_i_am_viewing_an_appointment()
+        self.given_i_have_an_upcoming_appointment()
+        self.given_i_am_viewing_the_upcoming_appointment()
         self.when_i_click_on_view_participant_record()
         self.then_i_should_be_on_the_participant_record_page()
         self.and_i_should_see_the_participant_record()
@@ -32,12 +36,53 @@ class TestParticipantRecord(SystemTestCase):
         self.given_i_am_on_the_participant_record_page()
         self.then_the_accessibility_baseline_is_met()
 
-    def given_i_am_viewing_an_appointment(self):
+    def test_viewing_upcoming_appointments(self):
+        self.given_i_have_an_upcoming_appointment()
+        self.and_i_am_on_the_participant_record_page()
+        self.then_i_should_see_the_upcoming_appointment()
+        self.when_i_click_on_the_upcoming_appointment()
+        self.then_i_should_be_on_the_upcoming_appointment_page()
+
+    def test_viewing_past_appointments(self):
+        self.given_i_have_past_appointments()
+        self.and_i_am_on_the_participant_record_page()
+        self.then_i_should_see_the_past_appointments()
+        self.when_i_click_on_a_past_appointment()
+        self.then_i_should_be_on_the_past_appointment_page()
+
+    def given_i_have_an_upcoming_appointment(self):
+        clinic_slot = ClinicSlotFactory(
+            starts_at=datetime(2025, 1, 2, 11, tzinfo=tz.utc)
+        )
+        screening_episode = ScreeningEpisodeFactory(participant=self.participant)
+        self.upcoming_appointment = AppointmentFactory(
+            clinic_slot=clinic_slot, screening_episode=screening_episode
+        )
+
+    def given_i_have_past_appointments(self):
+        clinic_slot_2022 = ClinicSlotFactory(
+            starts_at=datetime(2022, 1, 2, 11, tzinfo=tz.utc)
+        )
+        clinic_slot_2019 = ClinicSlotFactory(
+            starts_at=datetime(2019, 1, 2, 11, tzinfo=tz.utc)
+        )
+        self.past_appointments = [
+            AppointmentFactory(
+                clinic_slot=clinic_slot_2022,
+                screening_episode=ScreeningEpisodeFactory(participant=self.participant),
+            ),
+            AppointmentFactory(
+                clinic_slot=clinic_slot_2019,
+                screening_episode=ScreeningEpisodeFactory(participant=self.participant),
+            ),
+        ]
+
+    def given_i_am_viewing_the_upcoming_appointment(self):
         self.page.goto(
             self.live_server_url
             + reverse(
                 "mammograms:start_screening",
-                kwargs={"id": self.appointment.pk},
+                kwargs={"id": self.upcoming_appointment.pk},
             )
         )
 
@@ -49,6 +94,8 @@ class TestParticipantRecord(SystemTestCase):
                 kwargs={"pk": self.participant.pk},
             )
         )
+
+    and_i_am_on_the_participant_record_page = given_i_am_on_the_participant_record_page
 
     def when_i_click_on_view_participant_record(self):
         self.page.get_by_text("View participant record").click()
@@ -71,6 +118,44 @@ class TestParticipantRecord(SystemTestCase):
     def then_i_should_be_back_on_the_appointment(self):
         path = reverse(
             "mammograms:start_screening",
-            kwargs={"id": self.appointment.pk},
+            kwargs={"id": self.upcoming_appointment.pk},
+        )
+        expect(self.page).to_have_url(re.compile(path))
+
+    def then_i_should_see_the_upcoming_appointment(self):
+        upcoming = self.page.get_by_test_id("upcoming-appointments-table")
+        expect(upcoming).to_be_visible()
+        appointment = upcoming.get_by_test_id("appointment-row")
+        expect(appointment).to_be_visible()
+        expect(appointment).to_contain_text("2 January 2025")
+
+    def then_i_should_see_the_past_appointments(self):
+        past = self.page.get_by_test_id("past-appointments-table")
+        expect(past).to_be_visible()
+        appointments = past.get_by_test_id("appointment-row").all()
+        assert len(appointments) == 2
+
+        expect(appointments[0]).to_contain_text("2 January 2022")
+        expect(appointments[1]).to_contain_text("2 January 2019")
+
+    def when_i_click_on_the_upcoming_appointment(self):
+        past = self.page.get_by_test_id("upcoming-appointments-table")
+        past.get_by_text("View details").click()
+
+    def when_i_click_on_a_past_appointment(self):
+        past = self.page.get_by_test_id("past-appointments-table")
+        past.get_by_text("View details").first.click()
+
+    def then_i_should_be_on_the_past_appointment_page(self):
+        path = reverse(
+            "mammograms:start_screening",
+            kwargs={"id": self.past_appointments[0].pk},
+        )
+        expect(self.page).to_have_url(re.compile(path))
+
+    def then_i_should_be_on_the_upcoming_appointment_page(self):
+        path = reverse(
+            "mammograms:start_screening",
+            kwargs={"id": self.upcoming_appointment.pk},
         )
         expect(self.page).to_have_url(re.compile(path))

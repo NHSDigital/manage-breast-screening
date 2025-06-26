@@ -86,9 +86,7 @@
       "date_of_birth": "1959-07-22",
       "ethnic_group": null,
       "risk_level": "Routine",
-      "extra_needs": [
-        "Wheelchair user"
-      ]
+      "extra_needs": ["Wheelchair user"]
     }
   },
   {
