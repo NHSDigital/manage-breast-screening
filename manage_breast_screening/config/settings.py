@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "manage_breast_screening.core",
     "manage_breast_screening.clinics",
+    "manage_breast_screening.notifications",
     "manage_breast_screening.participants",
     "manage_breast_screening.mammograms",
 ]
