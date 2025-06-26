@@ -11,6 +11,25 @@ parameters:
       - dev
 
 stages:
+  - staging: commit-pending
+    displayName: Update commit status to pending
+    pool:
+      name: private-pool-dev-uks
+    isSkippable: false
+    jobs:
+    - job: commit-pending-job
+      displayName: Update commit status to pending job
+      steps:
+      - bash: |
+          echo $GH_TOKEN | gh auth login --with-token
+
+          gh api \
+          --method POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          /repos/NHSDigital/dtos-manage-breast-screening/statuses/${{ parameters.commitSHA }} \
+          -f "state=pending" -f "target_url=https://example.com/build/status" -f "description=The deployment job is running" -f "context=deployment/ADO"
+
   - ${{ each env in parameters.environments }}:
       - stage: ${{ env }}
         displayName: Deploy to ${{ env }} environment
