@@ -68,8 +68,27 @@ jobs:
       - name: Install dependencies
         run: make dependencies
 
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo -n "::set-output name=version::$(poetry show playwright | awk '/version/ { print $3 }')"
+
+      - name: Install Playwright dependencies
+        run: poetry run playwright install-deps
+
+      - name: Cache playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4.2.3
+        with:
+          # Use faster GNU tar for all runners
+          enableCrossOsArchive: true
+          path: '~/.cache/ms-playwright'
+          key: '${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}'
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
       - name: Install Playwright browsers
-        run: poetry run playwright install chromium --with-deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: poetry run playwright install chromium --only-shell
 
       - name: 'Run unit test suite'
         run: make test-unit
