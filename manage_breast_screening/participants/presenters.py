@@ -13,6 +13,7 @@ class ParticipantPresenter:
     def __init__(self, participant):
         self._participant = participant
 
+        self.id = participant.id
         self.extra_needs = participant.extra_needs
         self.ethnic_background = participant.ethnic_background
         self.full_name = participant.full_name
