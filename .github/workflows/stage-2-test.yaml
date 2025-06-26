@@ -33,6 +33,68 @@ on:
         type: string
 
 jobs:
+  test_playwright:
+    name: 'Tests (playwright)'
+    runs-on: 'mcr.microsoft.com/playwright/python:v1.52.0-noble'
+    timeout-minutes: 5
+
+    services:
+      postgres:
+        image: postgres:17.4-alpine3.21
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '${{inputs.python_version}}'
+          cache: poetry
+          cache-dependency-path: ./poetry.lock
+
+      - name: Install dependencies
+        run: make dependencies
+
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo -n "::set-output name=version::$(poetry show playwright | awk '/version/ { print $3 }')"
+
+      - name: Cache playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4.2.3
+        with:
+          # Use faster GNU tar for all runners
+          enableCrossOsArchive: true
+          path: '~/.cache/ms-playwright'
+          key: '${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}'
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: poetry run playwright install chromium --only-shell
+
+      - name: 'Run system test suite'
+        run: make test-ui
+        env:
+          DATABASE_NAME: postgres
+          DATABASE_PASSWORD: postgres
+          DATABASE_USER: postgres
+          DATABASE_HOST: localhost
+
   test:
     name: 'Tests'
     runs-on: ubuntu-latest
@@ -98,18 +160,10 @@ jobs:
           DATABASE_USER: postgres
           DATABASE_HOST: localhost
 
-      - name: 'Run system test suite'
-        run: make test-ui
-        env:
-          DATABASE_NAME: postgres
-          DATABASE_PASSWORD: postgres
-          DATABASE_USER: postgres
-          DATABASE_HOST: localhost
-
   test-lint:
     name: 'Linting'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 1
 
     steps:
       - name: 'Checkout code'
