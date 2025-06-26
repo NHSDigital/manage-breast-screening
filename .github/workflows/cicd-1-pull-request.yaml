@@ -40,5 +40,5 @@ jobs:
       id-token: write
     uses: ./.github/workflows/stage-4-deploy.yaml
     with:
-      commit_sha: ${{ github.event.pull_request.head }}
+      commit_sha: ${{ github.event.pull_request.head.sha }}
     secrets: inherit
