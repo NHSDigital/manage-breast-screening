@@ -18,7 +18,12 @@
       </h1>
 
       {% set personal_details_html %}
-        {{ participant_details(participant=participant, full_details=true, show_last_known_mammogram=false) }}
+        {{ participant_details(
+          participant=participant,
+          return_url=request.path,
+          full_details=true,
+          show_last_known_mammogram=false
+        ) }}
       {% endset %}
 
       {{ card({

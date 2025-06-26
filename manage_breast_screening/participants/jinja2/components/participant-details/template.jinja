@@ -8,7 +8,7 @@
 {% set ethnic_background = participant.ethnic_background  %}
 {% set ethnic_background_category = participant.ethnic_background_category %}
 {% set ethnicity_details_link %}
-  <a href="{{ url('participants:edit_ethnicity', kwargs={'id': participant.id}) }}" class="nhsuk-link">Enter ethnicity details</a>
+  <a href="{{ url('participants:edit_ethnicity', kwargs={'id': participant.id}) }}?return_url={{ return_url }}" class="nhsuk-link">Enter ethnicity details</a>
 {% endset %}
 
 {% set ethnicity_html %}
