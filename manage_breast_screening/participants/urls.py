@@ -12,4 +12,5 @@ urlpatterns = [
         name="show",
     ),
     path("", RedirectView.as_view(pattern_name="home"), name="index"),
+    path("<uuid:id>/edit-ethnicity", views.edit_ethnicity, name="edit_ethnicity"),
 ]
