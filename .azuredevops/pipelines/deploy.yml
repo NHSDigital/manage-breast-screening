@@ -11,13 +11,13 @@ parameters:
       - dev
 
 stages:
-  - stage: commit-pending
+  - stage: commitPendingStage
     displayName: Update commit status to pending
     pool:
       name: private-pool-dev-uks
     isSkippable: false
     jobs:
-    - job: commit-pending-job
+    - job: commitPendingJob
       displayName: Update commit status to pending job
       steps:
       - bash: |
