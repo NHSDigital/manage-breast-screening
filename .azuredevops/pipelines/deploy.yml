@@ -11,7 +11,7 @@ parameters:
       - dev
 
 stages:
-  - staging: commit-pending
+  - stage: commit-pending
     displayName: Update commit status to pending
     pool:
       name: private-pool-dev-uks
