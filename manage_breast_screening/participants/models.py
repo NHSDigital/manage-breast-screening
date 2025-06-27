@@ -69,6 +69,22 @@ class Ethnicity:
             "any_other_ethnic_background",
         ]
 
+    @classmethod
+    def ethnic_category(cls, ethnic_background_id: str):
+        for category, ethnic_backgrounds in cls.DATA.items():
+            for background in ethnic_backgrounds:
+                if ethnic_background_id == background["id"]:
+                    return category
+        return None
+
+    @classmethod
+    def ethnic_background_display_name(cls, ethnic_background_id: str):
+        for _, ethnic_backgrounds in cls.DATA.items():
+            for background in ethnic_backgrounds:
+                if ethnic_background_id == background["id"]:
+                    return background["display_name"]
+        return None
+
 
 class Participant(BaseModel):
     PREFER_NOT_TO_SAY = "Prefer not to say"
@@ -101,13 +117,13 @@ class Participant(BaseModel):
         else:
             return today.year - self.date_of_birth.year - 1
 
-    def ethnic_background_category(self):
-        matches = [
-            category
-            for category, backgrounds in Ethnicity.DATA.items()
-            if self.ethnic_background in backgrounds
-        ]
-        return matches[0] if matches else None
+    @property
+    def ethnic_category(self):
+        return Ethnicity.ethnic_category(self.ethnic_background)
+
+    @property
+    def ethnic_background_display_name(self):
+        return Ethnicity.ethnic_background_display_name(self.ethnic_background)
 
 
 class ParticipantAddress(models.Model):

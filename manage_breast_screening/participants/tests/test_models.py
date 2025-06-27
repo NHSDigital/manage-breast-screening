@@ -14,17 +14,32 @@ class TestParticipant:
     @pytest.mark.parametrize(
         "category,group",
         [
-            ("White", "English, Welsh, Scottish, Northern Irish or British"),
-            ("Asian or Asian British", "Pakistani"),
-            (None, None),
+            ("White", "english_welsh_scottish_ni_british"),
+            ("Asian or Asian British", "pakistani"),
         ],
     )
-    def test_ethnic_background_category(self, category, group):
+    def test_ethnic_category(self, category, group):
+        assert (
+            ParticipantFactory.build(ethnic_background=group).ethnic_category
+            == category
+        )
+
+    @pytest.mark.parametrize(
+        "id,display_name",
+        [
+            (
+                "english_welsh_scottish_ni_british",
+                "English, Welsh, Scottish, Northern Irish or British",
+            ),
+            ("pakistani", "Pakistani"),
+        ],
+    )
+    def test_ethnic_background_display_name(self, id, display_name):
         assert (
             ParticipantFactory.build(
-                ethnic_background=group
-            ).ethnic_background_category()
-            == category
+                ethnic_background=id
+            ).ethnic_background_display_name
+            == display_name
         )
 
 
