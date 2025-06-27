@@ -7,10 +7,10 @@
 
 {% set ethnic_background = participant.ethnic_background %}
 {% set ethnic_background_category = participant.ethnic_category %}
+{% set ethnicity_details_url = url("participants:edit_ethnicity", kwargs={"id": participant.id}) + "?return_url=" + return_url %}
 {% set ethnicity_details_link %}
-  <a href="{{ url('participants:edit_ethnicity', kwargs={'id': participant.id}) }}?return_url={{ return_url }}" class="nhsuk-link">Enter ethnicity details</a>
+  <a href="{{ ethnicity_details_url }}" class="nhsuk-link">Enter ethnicity details</a>
 {% endset %}
-
 {% set ethnicity_html %}
   {% if ethnic_background == "Prefer not to say" %}
     {{ ethnic_background }}
@@ -20,6 +20,16 @@
     {{ ethnicity_details_link | safe }}
   {% endif %}
 {% endset %}
+
+{% set ethnicity_change_link = {
+    "items": [
+      {
+        "href": ethnicity_details_url,
+        "text": "Change",
+        "visuallyHiddenText": "ethnicity"
+      }
+    ]
+  } if ethnic_background else undefined %}
 
 {% set address_html %}
   {% if participant.address %}
@@ -84,7 +94,8 @@
      },
      "value": {
        "html": ethnicity_html | safe
-     }
+     },
+     "actions": ethnicity_change_link
    },
    {
      "key": {

@@ -32,12 +32,12 @@ class TestEthnicityDetailsForm(SystemTestCase):
         self.then_i_should_be_back_on_the_appointment()
         self.and_the_ethnicity_is_updated()
 
-        # self.when_i_click_the_change_ethnicity_link()
-        # self.then_i_should_be_on_the_ethnicity_details_form()
-        # self.when_i_choose_a_non_specific_ethnicity()
-        # self.and_i_submit_the_form()
-        # self.then_i_should_be_back_on_the_appointment()
-        # self.and_the_new_ethnicity_is_recorded()
+        self.when_i_click_the_change_ethnicity_link()
+        self.then_i_should_be_on_the_ethnicity_details_form()
+        self.when_i_choose_a_non_specific_ethnicity()
+        self.and_i_submit_the_form()
+        self.then_i_should_be_back_on_the_appointment()
+        self.and_the_new_ethnicity_is_recorded()
 
     def given_i_am_viewing_an_appointment(self):
         self.page.goto(
@@ -90,7 +90,22 @@ class TestEthnicityDetailsForm(SystemTestCase):
         ethnicity_row = self.page.locator(".nhsuk-summary-list__row").filter(
             has_text="Ethnicity"
         )
-        ethnicity_value = ethnicity_row.locator(".nhsuk-summary-list__value")
-        expect(ethnicity_value).to_contain_text("Chinese")
+        expect(ethnicity_row).to_contain_text("Asian or Asian British (Chinese)")
         self.participant.refresh_from_db()
         self.assertEqual(self.participant.ethnic_background, "chinese")
+
+    def when_i_click_the_change_ethnicity_link(self):
+        self.page.get_by_role("link", name="Change ethnicity").click()
+
+    def when_i_choose_a_non_specific_ethnicity(self):
+        self.page.get_by_label("Any other White background").check()
+
+    def and_the_new_ethnicity_is_recorded(self):
+        self.participant.refresh_from_db()
+        self.assertEqual(
+            self.participant.ethnic_background, "any_other_white_background"
+        )
+        ethnicity_row = self.page.locator(".nhsuk-summary-list__row").filter(
+            has_text="Ethnicity"
+        )
+        expect(ethnicity_row).to_contain_text("White (Any other White background)")
