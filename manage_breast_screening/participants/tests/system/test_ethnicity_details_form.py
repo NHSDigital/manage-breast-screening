@@ -108,4 +108,4 @@ class TestEthnicityDetailsForm(SystemTestCase):
         ethnicity_row = self.page.locator(".nhsuk-summary-list__row").filter(
             has_text="Ethnicity"
         )
-        expect(ethnicity_row).to_contain_text("White (Any other White background)")
+        expect(ethnicity_row).to_contain_text("White (any other)")
