@@ -46,7 +46,7 @@ class TestParticipantRecord(SystemTestCase):
             self.live_server_url
             + reverse(
                 "participants:show",
-                kwargs={"pk": self.participant.pk},
+                kwargs={"id": self.participant.pk},
             )
         )
 
@@ -56,7 +56,7 @@ class TestParticipantRecord(SystemTestCase):
     def then_i_should_be_on_the_participant_record_page(self):
         path = reverse(
             "participants:show",
-            kwargs={"pk": self.participant.pk},
+            kwargs={"id": self.participant.pk},
         )
         expect(self.page).to_have_url(re.compile(path))
 

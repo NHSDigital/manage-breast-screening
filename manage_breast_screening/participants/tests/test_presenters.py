@@ -4,6 +4,7 @@ from uuid import uuid4
 
 import pytest
 
+from manage_breast_screening.participants.models import Ethnicity
 from manage_breast_screening.participants.presenters import ParticipantPresenter
 
 from .factories import ParticipantAddressFactory, ParticipantFactory
@@ -18,7 +19,7 @@ class TestParticipantPresenter:
     def participant(self):
         participant_id = uuid4()
         participant = ParticipantFactory.build(
-            id=participant_id,
+            pk=participant_id,
             nhs_number="99900900829",
             ethnic_background_id="irish",
             first_name="Firstname",
@@ -51,4 +52,13 @@ class TestParticipantPresenter:
         assert result.date_of_birth == "1 January 1955"
         assert result.age == "70 years old"
         assert result.risk_level == ""
-        assert result.url == f"/participants/{participant.id}/"
+        assert result.url == f"/participants/{participant.pk}/"
+
+    @pytest.mark.parametrize(
+        "background_id", Ethnicity.non_specific_ethnic_backgrounds()
+    )
+    def test_any_other_ethnic_background(self, participant, background_id):
+        participant.ethnic_background_id = background_id
+        result = ParticipantPresenter(participant)
+
+        assert result.ethnic_background == "any other"

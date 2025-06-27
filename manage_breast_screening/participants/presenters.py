@@ -15,7 +15,7 @@ class ParticipantPresenter:
     def __init__(self, participant):
         self._participant = participant
 
-        self.id = participant.id
+        self.id = participant.pk
         self.extra_needs = participant.extra_needs
         self.ethnic_category = participant.ethnic_category
         self.full_name = participant.full_name
@@ -26,7 +26,7 @@ class ParticipantPresenter:
         self.date_of_birth = format_date(participant.date_of_birth)
         self.age = format_age(participant.age())
         self.risk_level = sentence_case(participant.risk_level)
-        self.url = reverse("participants:show", kwargs={"id": participant.id})
+        self.url = reverse("participants:show", kwargs={"id": participant.pk})
 
     @property
     def address(self):

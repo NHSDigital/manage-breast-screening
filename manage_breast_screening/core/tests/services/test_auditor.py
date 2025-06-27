@@ -28,7 +28,7 @@ class TestAuditor:
             "phone": participant.phone,
             "email": participant.email,
             "date_of_birth": participant.date_of_birth,
-            "ethnic_background": participant.ethnic_background,
+            "ethnic_background_id": participant.ethnic_background_id,
             "risk_level": participant.risk_level,
             "extra_needs": participant.extra_needs,
         }
@@ -86,7 +86,7 @@ class TestAuditor:
             "phone": a.phone,
             "email": a.email,
             "date_of_birth": a.date_of_birth,
-            "ethnic_background": a.ethnic_background,
+            "ethnic_background_id": a.ethnic_background_id,
             "risk_level": a.risk_level,
             "extra_needs": a.extra_needs,
         }
@@ -98,7 +98,7 @@ class TestAuditor:
             "phone": b.phone,
             "email": b.email,
             "date_of_birth": b.date_of_birth,
-            "ethnic_background": b.ethnic_background,
+            "ethnic_background_id": b.ethnic_background_id,
             "risk_level": b.risk_level,
             "extra_needs": b.extra_needs,
         }
@@ -126,7 +126,7 @@ class TestAuditor:
             "phone": a.phone,
             "email": a.email,
             "date_of_birth": a.date_of_birth,
-            "ethnic_background": a.ethnic_background,
+            "ethnic_background_id": a.ethnic_background_id,
             "risk_level": a.risk_level,
             "extra_needs": a.extra_needs,
         }
@@ -138,7 +138,7 @@ class TestAuditor:
             "phone": b.phone,
             "email": b.email,
             "date_of_birth": b.date_of_birth,
-            "ethnic_background": b.ethnic_background,
+            "ethnic_background_id": b.ethnic_background_id,
             "risk_level": b.risk_level,
             "extra_needs": b.extra_needs,
         }

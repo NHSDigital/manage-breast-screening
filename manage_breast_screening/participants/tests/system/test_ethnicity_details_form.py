@@ -56,7 +56,7 @@ class TestEthnicityDetailsForm(SystemTestCase):
             re.compile(
                 reverse(
                     "participants:edit_ethnicity",
-                    kwargs={"id": self.participant.id},
+                    kwargs={"id": self.participant.pk},
                 )
             )
         )
