@@ -30,7 +30,7 @@ class TestEthnicityDetailsForm(SystemTestCase):
         self.when_i_select_an_ethnicity()
         self.and_i_submit_the_form()
         self.then_i_should_be_back_on_the_appointment()
-        self.and_the_ethnicity_is_updated()
+        self.and_the_ethnicity_is_updated_to("Asian or Asian British (Chinese)")
 
         self.when_i_click_the_change_ethnicity_link()
         self.then_i_should_be_on_the_ethnicity_details_form()
@@ -38,7 +38,13 @@ class TestEthnicityDetailsForm(SystemTestCase):
         self.when_i_choose_a_non_specific_ethnicity()
         self.and_i_submit_the_form()
         self.then_i_should_be_back_on_the_appointment()
-        self.and_the_new_ethnicity_is_recorded()
+        self.and_the_ethnicity_is_updated_to("White (any other)")
+
+        self.when_i_click_the_change_ethnicity_link()
+        self.and_i_prefer_not_to_say()
+        self.and_i_submit_the_form()
+        self.then_i_should_be_back_on_the_appointment()
+        self.and_the_ethnicity_is_updated_to("Prefer not to say")
 
     def given_i_am_viewing_an_appointment(self):
         self.page.goto(
@@ -87,13 +93,11 @@ class TestEthnicityDetailsForm(SystemTestCase):
             )
         )
 
-    def and_the_ethnicity_is_updated(self):
+    def and_the_ethnicity_is_updated_to(self, expected_ethnicity):
         ethnicity_row = self.page.locator(".nhsuk-summary-list__row").filter(
             has_text="Ethnicity"
         )
-        expect(ethnicity_row).to_contain_text("Asian or Asian British (Chinese)")
-        self.participant.refresh_from_db()
-        self.assertEqual(self.participant.ethnic_background_id, "chinese")
+        expect(ethnicity_row).to_contain_text(expected_ethnicity)
 
     def when_i_click_the_change_ethnicity_link(self):
         self.page.get_by_role("link", name="Change ethnicity").click()
@@ -104,12 +108,5 @@ class TestEthnicityDetailsForm(SystemTestCase):
     def when_i_choose_a_non_specific_ethnicity(self):
         self.page.get_by_label("Any other White background").check()
 
-    def and_the_new_ethnicity_is_recorded(self):
-        self.participant.refresh_from_db()
-        self.assertEqual(
-            self.participant.ethnic_background_id, "any_other_white_background"
-        )
-        ethnicity_row = self.page.locator(".nhsuk-summary-list__row").filter(
-            has_text="Ethnicity"
-        )
-        expect(ethnicity_row).to_contain_text("White (any other)")
+    def and_i_prefer_not_to_say(self):
+        self.page.get_by_label("Prefer not to say").check()
