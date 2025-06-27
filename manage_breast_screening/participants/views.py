@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from .forms import EthnicityForm
@@ -31,7 +31,19 @@ def show(request, pk):
 def edit_ethnicity(request, id):
     participant = get_object_or_404(Participant, id=id)
 
-    form = EthnicityForm(participant=participant)
+    if request.method == "POST":
+        return_url = request.POST.get("return_url")
+        form = EthnicityForm(request.POST, participant=participant)
+        if form.is_valid():
+            form.save()
+            return redirect(return_url)
+    else:
+        return_url = request.GET.get("return_url")
+        form = EthnicityForm(participant=participant)
+
+    return_url = return_url or reverse(
+        "participants:show", kwargs={"id": participant.id}
+    )
 
     return render(
         request,
@@ -42,7 +54,7 @@ def edit_ethnicity(request, id):
             "heading": "Ethnicity",
             "back_link": {
                 "text": "Go back",
-                "href": request.GET.get("return_url"),
+                "href": return_url,
             },
         },
     )

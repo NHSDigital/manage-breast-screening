@@ -27,6 +27,8 @@
 
       <form action="{{ request.path }}" method="POST">
         {{ csrf_input }}
+        <input type="hidden" name="return_url" value="{{ back_link.href }}">
+
         {% set hasErrors = form.errors %}
 
         <div class="nhsuk-form-group {{"nhsuk-form-group--error" if hasErrors}}">
