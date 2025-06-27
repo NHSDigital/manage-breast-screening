@@ -32,6 +32,12 @@ get-subscription-ids: # Retrieve the hub subscription ID based on the subscripti
 	$(eval HUB_SUBSCRIPTION_ID=$(shell az account show --query id --output tsv --name ${HUB_SUBSCRIPTION}))
 	$(if ${ARM_SUBSCRIPTION_ID},,$(eval export ARM_SUBSCRIPTION_ID=$(shell az account show --query id --output tsv)))
 
+terraform-init-no-backend: # Initialise terraform modules only and update terraform lock file - make terraform-init-no-backend
+	rm -rf infrastructure/modules/dtos-devops-templates
+	git -c advice.detachedHead=false clone --depth=1 --single-branch --branch main \
+		https://github.com/NHSDigital/dtos-devops-templates.git infrastructure/modules/dtos-devops-templates
+	terraform -chdir=infrastructure/terraform init -upgrade -backend=false
+
 terraform-init: set-azure-account get-subscription-ids # Initialise Terraform - make <env> terraform-init
 	$(eval STORAGE_ACCOUNT_NAME=samanbrs${ENV_CONFIG}tfstate)
 	$(eval export ARM_USE_AZUREAD=true)
