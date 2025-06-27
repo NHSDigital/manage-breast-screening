@@ -7,7 +7,7 @@ app_name = "participants"
 
 urlpatterns = [
     path(
-        "<uuid:pk>/",
+        "<uuid:id>/",
         views.show,
         name="show",
     ),
