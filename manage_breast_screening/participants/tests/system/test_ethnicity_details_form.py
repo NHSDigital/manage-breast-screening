@@ -34,6 +34,7 @@ class TestEthnicityDetailsForm(SystemTestCase):
 
         self.when_i_click_the_change_ethnicity_link()
         self.then_i_should_be_on_the_ethnicity_details_form()
+        self.and_the_saved_ethnicity_is_selected()
         self.when_i_choose_a_non_specific_ethnicity()
         self.and_i_submit_the_form()
         self.then_i_should_be_back_on_the_appointment()
@@ -96,6 +97,9 @@ class TestEthnicityDetailsForm(SystemTestCase):
 
     def when_i_click_the_change_ethnicity_link(self):
         self.page.get_by_role("link", name="Change ethnicity").click()
+
+    def and_the_saved_ethnicity_is_selected(self):
+        expect(self.page.get_by_label("Chinese")).to_be_checked()
 
     def when_i_choose_a_non_specific_ethnicity(self):
         self.page.get_by_label("Any other White background").check()

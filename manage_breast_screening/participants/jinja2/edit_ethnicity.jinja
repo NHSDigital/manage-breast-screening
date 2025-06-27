@@ -54,6 +54,7 @@
                   {% do radio_items.append({
                     "value": ethnic_background.id,
                     "text": ethnic_background.display_name,
+                    "checked": ethnic_background.id == participant.ethnic_background_id,
                   }) %}
                 {% endfor %}
                 {{ radios({
