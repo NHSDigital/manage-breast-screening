@@ -12,17 +12,34 @@ from .factories import AppointmentFactory, ParticipantFactory, ScreeningEpisodeF
 
 class TestParticipant:
     @pytest.mark.parametrize(
-        "category,group",
+        "category,background_id",
         [
-            ("White", "English, Welsh, Scottish, Northern Irish or British"),
-            ("Asian or Asian British", "Pakistani"),
-            (None, None),
+            ("White", "english_welsh_scottish_ni_british"),
+            ("Asian or Asian British", "pakistani"),
         ],
     )
-    def test_ethnic_group_category(self, category, group):
+    def test_ethnic_category(self, category, background_id):
         assert (
-            ParticipantFactory.build(ethnic_group=group).ethnic_group_category()
+            ParticipantFactory.build(ethnic_background_id=background_id).ethnic_category
             == category
+        )
+
+    @pytest.mark.parametrize(
+        "background_id,display_name",
+        [
+            (
+                "english_welsh_scottish_ni_british",
+                "English, Welsh, Scottish, Northern Irish or British",
+            ),
+            ("pakistani", "Pakistani"),
+        ],
+    )
+    def test_ethnic_background(self, background_id, display_name):
+        assert (
+            ParticipantFactory.build(
+                ethnic_background_id=background_id
+            ).ethnic_background
+            == display_name
         )
 
 

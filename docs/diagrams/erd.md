@@ -107,7 +107,7 @@ Participant {
     TextField phone
     CharField email
     DateField date_of_birth
-    CharField ethnic_group
+    CharField ethnic_background_id
     TextField risk_level
     JSONField extra_needs
 }

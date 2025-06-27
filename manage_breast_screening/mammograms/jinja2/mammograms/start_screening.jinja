@@ -56,6 +56,10 @@
   {{ card({
     "headingHtml": " ",
     "headingLevel": "2",
-    "descriptionHtml": participant_details(participant=appointment.participant, last_known_screening=appointment.last_known_screening)
+    "descriptionHtml": participant_details(
+      participant=appointment.participant,
+      return_url=request.path,
+      last_known_screening=appointment.last_known_screening,
+    )
   }) }}
 {% endblock %}

@@ -27,6 +27,10 @@ def as_hint(value):
     return Markup(f'<span class="app-text-grey">{value}</span>' if value else "")
 
 
+def raise_helper(msg):
+    raise Exception(msg)
+
+
 def environment(**options):
     env = Environment(**options, extensions=["jinja2.ext.do"])
     if env.loader:
@@ -46,5 +50,5 @@ def environment(**options):
     )
     env.filters["no_wrap"] = no_wrap
     env.filters["as_hint"] = as_hint
-
+    env.globals["raise"] = raise_helper
     return env

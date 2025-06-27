@@ -1,5 +1,7 @@
 from django.urls import reverse
 
+from manage_breast_screening.participants.models import Ethnicity
+
 from ..core.utils.date_formatting import format_date, format_relative_date
 from ..core.utils.string_formatting import (
     format_age,
@@ -13,8 +15,9 @@ class ParticipantPresenter:
     def __init__(self, participant):
         self._participant = participant
 
+        self.id = participant.pk
         self.extra_needs = participant.extra_needs
-        self.ethnic_group = participant.ethnic_group
+        self.ethnic_category = participant.ethnic_category
         self.full_name = participant.full_name
         self.gender = participant.gender
         self.email = participant.email
@@ -23,15 +26,7 @@ class ParticipantPresenter:
         self.date_of_birth = format_date(participant.date_of_birth)
         self.age = format_age(participant.age())
         self.risk_level = sentence_case(participant.risk_level)
-        self.url = reverse("participants:show", kwargs={"pk": participant.pk})
-
-    @property
-    def ethnic_group_category(self):
-        category = self._participant.ethnic_group_category()
-        if category:
-            return category.replace("Any other", "any other")
-        else:
-            return None
+        self.url = reverse("participants:show", kwargs={"id": participant.pk})
 
     @property
     def address(self):
@@ -40,6 +35,14 @@ class ParticipantPresenter:
             return {}
 
         return {"lines": address.lines, "postcode": address.postcode}
+
+    @property
+    def ethnic_background(self):
+        stored_value = self._participant.ethnic_background_id
+        if stored_value in Ethnicity.non_specific_ethnic_backgrounds():
+            return "any other"
+        else:
+            return self._participant.ethnic_background
 
 
 class ScreeningHistoryPresenter:
