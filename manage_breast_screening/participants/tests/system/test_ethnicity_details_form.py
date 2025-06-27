@@ -15,7 +15,7 @@ from manage_breast_screening.participants.tests.factories import (
 class TestEthnicityDetailsForm(SystemTestCase):
     @pytest.fixture(autouse=True)
     def before(self):
-        self.participant = ParticipantFactory(ethnic_background="")
+        self.participant = ParticipantFactory(ethnic_background_id="")
         self.screening_episode = ScreeningEpisodeFactory(participant=self.participant)
         self.appointment = AppointmentFactory(screening_episode=self.screening_episode)
 
@@ -92,7 +92,7 @@ class TestEthnicityDetailsForm(SystemTestCase):
         )
         expect(ethnicity_row).to_contain_text("Asian or Asian British (Chinese)")
         self.participant.refresh_from_db()
-        self.assertEqual(self.participant.ethnic_background, "chinese")
+        self.assertEqual(self.participant.ethnic_background_id, "chinese")
 
     def when_i_click_the_change_ethnicity_link(self):
         self.page.get_by_role("link", name="Change ethnicity").click()
@@ -103,7 +103,7 @@ class TestEthnicityDetailsForm(SystemTestCase):
     def and_the_new_ethnicity_is_recorded(self):
         self.participant.refresh_from_db()
         self.assertEqual(
-            self.participant.ethnic_background, "any_other_white_background"
+            self.participant.ethnic_background_id, "any_other_white_background"
         )
         ethnicity_row = self.page.locator(".nhsuk-summary-list__row").filter(
             has_text="Ethnicity"

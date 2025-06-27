@@ -97,7 +97,7 @@ class Participant(BaseModel):
     phone = models.TextField()
     email = models.EmailField()
     date_of_birth = models.DateField()
-    ethnic_background = models.CharField(
+    ethnic_background_id = models.CharField(
         blank=True, null=True, choices=ETHNIC_BACKGROUND_CHOICES
     )
     risk_level = models.TextField()
@@ -119,11 +119,11 @@ class Participant(BaseModel):
 
     @property
     def ethnic_category(self):
-        return Ethnicity.ethnic_category(self.ethnic_background)
+        return Ethnicity.ethnic_category(self.ethnic_background_id)
 
     @property
-    def ethnic_background_display_name(self):
-        return Ethnicity.ethnic_background_display_name(self.ethnic_background)
+    def ethnic_background(self):
+        return Ethnicity.ethnic_background_display_name(self.ethnic_background_id)
 
 
 class ParticipantAddress(models.Model):

@@ -28,7 +28,7 @@ class EthnicityForm(forms.Form):
         return Ethnicity.non_specific_ethnic_backgrounds()
 
     def save(self):
-        self.participant.ethnic_background = self.cleaned_data[
+        self.participant.ethnic_background_id = self.cleaned_data[
             "ethnic_background_choice"
         ]
         self.participant.save()

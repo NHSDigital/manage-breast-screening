@@ -15,7 +15,7 @@ class ParticipantPresenter:
 
         self.id = participant.id
         self.extra_needs = participant.extra_needs
-        self.ethnic_background = participant.ethnic_background_display_name
+        self.ethnic_background = participant.ethnic_background
         self.ethnic_category = participant.ethnic_category
         self.full_name = participant.full_name
         self.gender = participant.gender
