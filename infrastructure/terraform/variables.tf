@@ -65,4 +65,8 @@ locals {
   hub_vnet_rg_name    = "rg-hub-${var.hub}-uks-hub-networking"
 
   postgres_sql_admin_group = "postgres_manbrs_${var.environment}_uks_admin"
+  hub_live_name_map = {
+    dev = "nonlive"
+  }
+  hub_live_name = local.hub_live_name_map[var.hub]
 }
