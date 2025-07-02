@@ -1,0 +1,42 @@
+{% extends 'layout-app.jinja' %}
+{% from 'button/macro.jinja' import button %}
+{% from 'fieldset/macro.jinja' import fieldset %}
+{% from 'back-link/macro.jinja' import backLink %}
+{% from 'django_form_helpers.jinja' import app_radios, form_error_summary %}
+
+{% block beforeContent %}
+{{ backLink(back_link_params) }}
+{% endblock beforeContent %}
+
+{% block messages %}
+  {{ form_error_summary(form) }}
+{% endblock %}
+
+{% block page_content %}
+<div class="nhsuk-grid-row">
+  <div class="nhsuk-grid-column-full">
+
+  {% block heading %}
+  <h1 class="nhsuk-heading-l">
+    {% if caption %}
+      <span class="nhsuk-caption-l">{{ caption }}</span>
+    {% endif %}
+    {{title}}
+  </h1>
+
+  <form action="{{request.path}}" method="POST">
+    <div class="nhsuk-grid-row">
+        <div class="nhsuk-grid-column-two-thirds">
+
+
+          {{ button({
+            "text": "Continue"
+          }) }}
+
+          {{csrf_input}}
+        </div>
+    </div>
+  </form>
+
+  {% endblock heading %}
+  {% endblock page_content %}
