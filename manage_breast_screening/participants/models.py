@@ -116,6 +116,7 @@ class Participant(BaseModel):
     ethnic_background_id = models.CharField(
         blank=True, null=True, choices=ETHNIC_BACKGROUND_CHOICES
     )
+    any_other_background_details = models.TextField(blank=True, null=True)
     risk_level = models.TextField()
     extra_needs = models.JSONField(null=False, default=list, blank=True)
 
