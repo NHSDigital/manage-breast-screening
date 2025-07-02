@@ -140,7 +140,13 @@ class Participant(BaseModel):
 
     @property
     def ethnic_background(self):
-        return Ethnicity.ethnic_background_display_name(self.ethnic_background_id)
+        if (
+            self.ethnic_background_id in Ethnicity.non_specific_ethnic_backgrounds()
+            and self.any_other_background_details
+        ):
+            return self.any_other_background_details
+        else:
+            return Ethnicity.ethnic_background_display_name(self.ethnic_background_id)
 
 
 class ParticipantAddress(models.Model):
