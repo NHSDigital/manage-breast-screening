@@ -24,9 +24,8 @@ def present_secondary_nav(id):
 
 
 class AppointmentPresenter:
-    def __init__(self, appointment, last_known_screening=None):
+    def __init__(self, appointment):
         self._appointment = appointment
-        self._last_known_screening = last_known_screening
 
         self.allStatuses = AppointmentStatus
         self.id = appointment.id
@@ -56,8 +55,13 @@ class AppointmentPresenter:
             "is_confirmed": current_status.state == AppointmentStatus.CONFIRMED,
         }
 
+
+class LastKnownMammogramPresenter:
+    def __init__(self, last_known_screening):
+        self._last_known_screening = last_known_screening
+
     @cached_property
-    def last_known_screening(self):
+    def last_known_mammogram(self):
         return (
             {
                 "date": format_date(self._last_known_screening.created_at),
