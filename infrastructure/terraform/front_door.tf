@@ -1,4 +1,6 @@
 data "azurerm_cdn_frontdoor_profile" "this" {
+    provider = azurerm.hub
+
     name                = "afd-${local.hub_live_name}-hub-manbrs"
     resource_group_name = "rg-hub-${var.hub}-uks-manbrs"
 }
@@ -15,7 +17,7 @@ module "frontdoor_endpoint" {
   custom_domains = {
     "${var.environment}-domain" = {
       host_name     = var.environment # For prod it must be equal to the dns_zone_name to use apex
-      dns_zone_name = "manage-breast.screening.nhs.uk"
+      dns_zone_name = "manage-breast-screening.non-live.screening.nhs.uk"
     }
   }
   name = var.environment # environment-specific to avoid naming collisions within a Front Door Profile
