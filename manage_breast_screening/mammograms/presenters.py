@@ -57,8 +57,9 @@ class AppointmentPresenter:
 
 
 class LastKnownMammogramPresenter:
-    def __init__(self, last_known_screening):
+    def __init__(self, last_known_screening, participant_pk):
         self._last_known_screening = last_known_screening
+        self.participant_pk = participant_pk
 
     @cached_property
     def last_known_mammogram(self):
@@ -76,6 +77,17 @@ class LastKnownMammogramPresenter:
             if self._last_known_screening
             else {}
         )
+
+    @cached_property
+    def add_link(self):
+        return {
+            "href": reverse(
+                "participants:add_previous_mammogram",
+                kwargs={"pk": self.participant_pk},
+            ),
+            "text": "Add another" if self.last_known_mammogram else "Add",
+            "visually_hidden_text": "mammogram",
+        }
 
 
 class ClinicSlotPresenter:

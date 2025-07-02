@@ -50,7 +50,8 @@ class StartScreening(BaseAppointmentForm):
         last_known_screening = appointment.screening_episode.previous()
         appointment_presenter = AppointmentPresenter(appointment)
         last_known_mammogram_presenter = LastKnownMammogramPresenter(
-            last_known_screening
+            last_known_screening,
+            participant_pk=appointment.screening_episode.participant.pk,
         )
 
         context.update(

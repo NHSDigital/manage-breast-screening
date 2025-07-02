@@ -89,8 +89,11 @@ class TestLastKnownMammogramPresenter:
         mock_screening = MagicMock(spec=ScreeningEpisode)
         mock_screening.created_at = datetime(2015, 1, 1)
         last_known_screening = mock_screening
+        participant_id = uuid4()
 
-        result = LastKnownMammogramPresenter(last_known_screening)
+        result = LastKnownMammogramPresenter(
+            last_known_screening, participant_pk=participant_id
+        )
 
         assert result.last_known_mammogram == {
             "date": "1 January 2015",
