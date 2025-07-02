@@ -57,7 +57,11 @@ variable "postgres_storage_mb" {
 variable "postgres_storage_tier" {
   default = "P4"
 }
-
+variable "use_apex_domain" {
+  description = "Use apex domain for the Front Door endpoint. Set to true for production."
+  type        = bool
+  default     = false
+}
 
 locals {
   region              = "uksouth"
@@ -67,6 +71,16 @@ locals {
   postgres_sql_admin_group = "postgres_manbrs_${var.environment}_uks_admin"
   hub_live_name_map = {
     dev = "nonlive"
+    prod = "live"
   }
   hub_live_name = local.hub_live_name_map[var.hub]
+
+  dns_zone_name_map = {
+    dev = "manage-breast-screening.non-live.screening.nhs.uk"
+    prod = "manage-breast-screening.screening.nhs.uk"
+  }
+  dns_zone_name = local.dns_zone_name_map[var.hub]
+
+  # For prod it must be equal to the dns_zone_name to use apex
+  hostname      = var.use_apex_domain ? local.dns_zone_name : "${var.environment}.${local.dns_zone_name}"
 }

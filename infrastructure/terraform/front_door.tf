@@ -16,8 +16,8 @@ module "frontdoor_endpoint" {
   cdn_frontdoor_profile_id = data.azurerm_cdn_frontdoor_profile.this.id
   custom_domains = {
     "${var.environment}-domain" = {
-      host_name     = var.environment # For prod it must be equal to the dns_zone_name to use apex
-      dns_zone_name = "manage-breast-screening.non-live.screening.nhs.uk"
+      host_name     = local.hostname      # For prod it must be equal to the dns_zone_name to use apex
+      dns_zone_name = local.dns_zone_name
     }
   }
   name = var.environment # environment-specific to avoid naming collisions within a Front Door Profile
