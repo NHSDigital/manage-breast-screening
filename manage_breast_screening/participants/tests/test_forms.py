@@ -37,10 +37,10 @@ class TestParticipantRecordedMammogramForm:
         )
         assert not form.is_valid()
         assert form.errors == {
-            "approx_date": ["Provide the approximate date."],
-            "different_name": ["Provide the previous name."],
+            "approx_date": ["Enter the approximate date when the x-rays were taken"],
+            "different_name": ["Enter the name the x-rays were taken with"],
             "location_details": [
-                "Provide the clinic or hospital name, or any location details."
+                "Enter the clinic or hospital name, or any location details"
             ],
         }
 

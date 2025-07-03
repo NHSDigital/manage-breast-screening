@@ -145,7 +145,7 @@ class ParticipantRecordedMammogramForm(ModelForm):
             self.add_error(
                 "location_details",
                 ValidationError(
-                    "Provide the clinic or hospital name, or any location details.",
+                    "Enter the clinic or hospital name, or any location details",
                     code="required",
                 ),
             )
@@ -153,18 +153,25 @@ class ParticipantRecordedMammogramForm(ModelForm):
         if when_taken == "exact" and not cleaned_data.get("exact_date"):
             self.add_error(
                 "exact_date",
-                ValidationError("Provide the date.", code="required"),
+                ValidationError(
+                    "Enter the date when the x-rays were taken", code="required"
+                ),
             )
         elif when_taken == "approx" and not cleaned_data.get("approx_date"):
             self.add_error(
                 "approx_date",
-                ValidationError("Provide the approximate date.", code="required"),
+                ValidationError(
+                    "Enter the approximate date when the x-rays were taken",
+                    code="required",
+                ),
             )
 
         if name_is_the_same == "no" and not cleaned_data.get("different_name"):
             self.add_error(
                 "different_name",
-                ValidationError("Provide the previous name.", code="required"),
+                ValidationError(
+                    "Enter the name the x-rays were taken with", code="required"
+                ),
             )
 
     def set_location_type(self, instance):
