@@ -69,21 +69,17 @@ class ParticipantRecordedMammogramForm(ModelForm):
 
         self.participant = participant
         self.current_provider = current_provider
+        self.where_taken_choices = {
+            self.WhereTaken.SAME_UNIT: f"At {current_provider.name}",
+            self.WhereTaken.ANOTHER_UNIT: "At another NHS breast screening unit",
+            self.WhereTaken.ELSEWHERE_UK: "Somewhere else in the UK",
+            self.WhereTaken.OUTSIDE_UK: "Outside the UK",
+            self.WhereTaken.PREFER_NOT_TO_SAY: "Prefer not to say",
+        }
 
         # Add additional fields which are used on the form for progressively disclosing
         # other form fields
-        self.fields["where_taken"] = ChoiceField(
-            choices=(
-                (self.WhereTaken.SAME_UNIT, f"At {current_provider.name}"),
-                (
-                    self.WhereTaken.ANOTHER_UNIT,
-                    "At another NHS breast screening unit",
-                ),
-                (self.WhereTaken.ELSEWHERE_UK, "Somewhere else in the UK"),
-                (self.WhereTaken.OUTSIDE_UK, "Outside the UK"),
-                (self.WhereTaken.PREFER_NOT_TO_SAY, "Prefer not to say"),
-            )
-        )
+        self.fields["where_taken"] = ChoiceField(choices=self.where_taken_choices)
 
         self.fields["date_accuracy"] = ChoiceField(
             choices=(
