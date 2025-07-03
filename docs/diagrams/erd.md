@@ -96,6 +96,52 @@ ClinicStatus {
     CharField state
     ForeignKey clinic
 }
+MessageBatch {
+    DateTimeField updated_at
+    UUIDField id
+    CharField notify_id
+    DateTimeField created_at
+    DateTimeField scheduled_at
+    DateTimeField sent_at
+    CharField status
+}
+Message {
+    UUIDField id
+    CharField notify_id
+    ForeignKey batch
+    DateTimeField created_at
+    DateTimeField sent_at
+    CharField status
+    ForeignKey appointment
+}
+Appointment {
+    UUIDField id
+    CharField nbss_id
+    IntegerField nhs_number
+    CharField status
+    CharField booked_by
+    CharField cancelled_by
+    IntegerField number
+    DateTimeField starts_at
+    DateTimeField created_at
+    ForeignKey clinic
+}
+Clinic {
+    UUIDField id
+    CharField code
+    CharField name
+    CharField alt_name
+    BooleanField holding_clinic
+    CharField location_code
+    CharField address_line_1
+    CharField address_line_2
+    CharField address_line_3
+    CharField address_line_4
+    CharField address_line_5
+    CharField postcode
+    DateTimeField created_at
+    DateTimeField updated_at
+}
 Participant {
     UUIDField id
     DateTimeField created_at
@@ -138,6 +184,19 @@ AppointmentStatus {
     DateTimeField created_at
     ForeignKey appointment
 }
+ParticipantReportedMammogram {
+    UUIDField id
+    DateTimeField created_at
+    DateTimeField updated_at
+    ForeignKey participant
+    CharField location_type
+    ForeignKey provider
+    TextField location_details
+    DateField exact_date
+    CharField approx_date
+    CharField different_name
+    TextField additional_information
+}
 LogEntry }|--|| User : user
 LogEntry }|--|| ContentType : content_type
 Permission }|--|| ContentType : content_type
@@ -150,9 +209,14 @@ Setting }|--|| Provider : provider
 Clinic }|--|| Setting : setting
 ClinicSlot }|--|| Clinic : clinic
 ClinicStatus }|--|| Clinic : clinic
+Message }|--|| MessageBatch : batch
+Message }|--|| Appointment : appointment
+Appointment }|--|| Clinic : clinic
 ParticipantAddress ||--|| Participant : participant
 ScreeningEpisode }|--|| Participant : participant
 Appointment }|--|| ScreeningEpisode : screening_episode
 Appointment }|--|| ClinicSlot : clinic_slot
 AppointmentStatus }|--|| Appointment : appointment
+ParticipantReportedMammogram }|--|| Participant : participant
+ParticipantReportedMammogram }|--|| Provider : provider
 ```

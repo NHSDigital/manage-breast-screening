@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 from django.urls import reverse
 
@@ -140,3 +140,15 @@ class ParticipantAppointmentsPresenter:
             "text": current_status.get_state_display(),
             "key": current_status.state,
         }
+
+
+def parse_back_link_params(participant_id, query_params):
+    """
+    Generate params for the back link component, using the `return_url` query param if available.
+    Otherwise, fall back to the participant show page
+    """
+    return_url = query_params.get("return_url")
+    if not return_url or urlparse(return_url).netloc:
+        return_url = reverse("participants:show", kwargs={"id": participant_id})
+
+    return {"href": return_url, "text": "Go back"}

@@ -1,11 +1,17 @@
 from logging import getLogger
 
+from django.db.models import Subquery
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from .forms import EthnicityForm
+from ..clinics.models import Provider
+from .forms import EthnicityForm, ParticipantRecordedMammogramForm
 from .models import Appointment, Participant
-from .presenters import ParticipantAppointmentsPresenter, ParticipantPresenter
+from .presenters import (
+    ParticipantAppointmentsPresenter,
+    ParticipantPresenter,
+    parse_back_link_params,
+)
 
 logger = getLogger(__name__)
 
@@ -68,5 +74,46 @@ def edit_ethnicity(request, id):
                 "text": "Go back",
                 "href": return_url,
             },
+        },
+    )
+
+
+def add_previous_mammogram(request, id):
+    participant = get_object_or_404(Participant, pk=id)
+
+    # TODO: extract to method. ensure this exists?
+    current_provider_id = Subquery(
+        Appointment.objects.select_related("clinic_slot__clinic__setting__provider")
+        .filter(
+            screening_episode__participant_id=id,
+        )
+        .order_by("-clinic_slot__starts_at")
+        .values("clinic_slot__clinic__setting__provider_id")[:1]
+    )
+
+    current_provider = Provider.objects.get(pk=current_provider_id)
+
+    if request.method == "POST":
+        form = ParticipantRecordedMammogramForm(
+            data=request.POST,
+            participant=participant,
+            current_provider=current_provider,
+        )
+        if form.is_valid():
+            form.save()
+            return redirect("clinics:index")
+    else:
+        form = ParticipantRecordedMammogramForm(
+            participant=participant, current_provider=current_provider
+        )
+
+    return render(
+        request,
+        "participants/add_previous_mammogram.jinja",
+        {
+            "title": "Add details of a previous mammogram",
+            "caption": participant.full_name,
+            "form": form,
+            "back_link_params": parse_back_link_params(id, request.GET),
         },
     )
