@@ -73,7 +73,7 @@ class TestEthnicityDetailsForm(SystemTestCase):
             self.live_server_url
             + reverse(
                 "mammograms:start_screening",
-                kwargs={"id": self.appointment.pk},
+                kwargs={"pk": self.appointment.pk},
             )
         )
 
@@ -85,7 +85,7 @@ class TestEthnicityDetailsForm(SystemTestCase):
             re.compile(
                 reverse(
                     "participants:edit_ethnicity",
-                    kwargs={"id": self.participant.pk},
+                    kwargs={"pk": self.participant.pk},
                 )
             )
         )
@@ -110,7 +110,7 @@ class TestEthnicityDetailsForm(SystemTestCase):
             re.compile(
                 reverse(
                     "mammograms:start_screening",
-                    kwargs={"id": self.appointment.pk},
+                    kwargs={"pk": self.appointment.pk},
                 )
             )
         )
