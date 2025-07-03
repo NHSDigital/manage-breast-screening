@@ -21,7 +21,7 @@ class TestParticipantRecordedMammogramForm:
         assert not form.is_valid()
         assert form.errors == {
             "where_taken": ["This field is required."],
-            "date_accuracy": ["This field is required."],
+            "when_taken": ["This field is required."],
             "name_is_the_same": ["This field is required."],
         }
 
@@ -31,7 +31,7 @@ class TestParticipantRecordedMammogramForm:
             current_provider,
             {
                 "where_taken": ParticipantRecordedMammogramForm.WhereTaken.ELSEWHERE_UK.value,
-                "date_accuracy": "approx",
+                "when_taken": "approx",
                 "name_is_the_same": "no",
             },
         )
@@ -50,7 +50,7 @@ class TestParticipantRecordedMammogramForm:
             current_provider,
             {
                 "where_taken": ParticipantRecordedMammogramForm.WhereTaken.ANOTHER_UNIT.value,
-                "date_accuracy": "approx",
+                "when_taken": "approx",
                 "approx_date": "5 years ago",
                 "name_is_the_same": "yes",
             },
@@ -63,7 +63,7 @@ class TestParticipantRecordedMammogramForm:
     def test_mammogram_in_same_provider(self, participant, current_provider):
         data = {
             "where_taken": ParticipantRecordedMammogramForm.WhereTaken.SAME_UNIT.value,
-            "date_accuracy": "approx",
+            "when_taken": "approx",
             "name_is_the_same": "yes",
             "approx_date": "5 years ago",
         }
@@ -83,7 +83,7 @@ class TestParticipantRecordedMammogramForm:
         data = {
             "where_taken": ParticipantRecordedMammogramForm.WhereTaken.ANOTHER_UNIT,
             "provider": other_provider.pk,
-            "date_accuracy": "approx",
+            "when_taken": "approx",
             "name_is_the_same": "yes",
             "approx_date": "5 years ago",
         }
@@ -102,7 +102,7 @@ class TestParticipantRecordedMammogramForm:
         data = {
             "where_taken": ParticipantRecordedMammogramForm.WhereTaken.ELSEWHERE_UK,
             "location_details": "XYZ provider",
-            "date_accuracy": "approx",
+            "when_taken": "approx",
             "name_is_the_same": "yes",
             "approx_date": "5 years ago",
         }
@@ -120,7 +120,7 @@ class TestParticipantRecordedMammogramForm:
     def test_mammogram_prefer_not_to_say(self, participant, current_provider):
         data = {
             "where_taken": ParticipantRecordedMammogramForm.WhereTaken.PREFER_NOT_TO_SAY,
-            "date_accuracy": "approx",
+            "when_taken": "approx",
             "name_is_the_same": "yes",
             "approx_date": "5 years ago",
         }
@@ -138,7 +138,7 @@ class TestParticipantRecordedMammogramForm:
         data = {
             "where_taken": ParticipantRecordedMammogramForm.WhereTaken.ELSEWHERE_UK,
             "location_details": "XYZ provider",
-            "date_accuracy": "approx",
+            "when_taken": "approx",
             "approx_date": "5 years ago",
             "name_is_the_same": "no",
             "different_name": "Jane Newname",
