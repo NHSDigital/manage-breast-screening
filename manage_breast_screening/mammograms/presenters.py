@@ -83,7 +83,7 @@ class LastKnownMammogramPresenter:
         return {
             "href": reverse(
                 "participants:add_previous_mammogram",
-                kwargs={"pk": self.participant_pk},
+                kwargs={"id": self.participant_pk},
             ),
             "text": "Add another" if self.last_known_mammogram else "Add",
             "visually_hidden_text": "mammogram",
