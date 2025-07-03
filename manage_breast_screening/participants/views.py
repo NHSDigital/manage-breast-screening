@@ -7,7 +7,11 @@ from django.urls import reverse
 from ..clinics.models import Provider
 from .forms import EthnicityForm, ParticipantRecordedMammogramForm
 from .models import Appointment, Participant
-from .presenters import ParticipantAppointmentsPresenter, ParticipantPresenter
+from .presenters import (
+    ParticipantAppointmentsPresenter,
+    ParticipantPresenter,
+    parse_back_link_params,
+)
 
 logger = getLogger(__name__)
 
@@ -74,14 +78,14 @@ def edit_ethnicity(request, id):
     )
 
 
-def add_previous_mammogram(request, pk):
-    participant = get_object_or_404(Participant, pk=pk)
+def add_previous_mammogram(request, id):
+    participant = get_object_or_404(Participant, pk=id)
 
     # TODO: extract to method. ensure this exists?
     current_provider_id = Subquery(
         Appointment.objects.select_related("clinic_slot__clinic__setting__provider")
         .filter(
-            screening_episode__participant_id=pk,
+            screening_episode__participant_id=id,
         )
         .order_by("-clinic_slot__starts_at")
         .values("clinic_slot__clinic__setting__provider_id")[:1]
@@ -110,9 +114,6 @@ def add_previous_mammogram(request, pk):
             "title": "Add details of a previous mammogram",
             "caption": participant.full_name,
             "form": form,
-            "back_link_params": {
-                "href": reverse("participants:show", kwargs={"pk": pk}),
-                "text": "Go back",
-            },
+            "back_link_params": parse_back_link_params(id, request.GET),
         },
     )

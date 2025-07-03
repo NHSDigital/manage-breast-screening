@@ -1,11 +1,14 @@
 {% extends 'layout-app.jinja' %}
 {% from 'button/macro.jinja' import button %}
-{% from 'fieldset/macro.jinja' import fieldset %}
 {% from 'back-link/macro.jinja' import backLink %}
-{% from 'django_form_helpers.jinja' import app_radios, form_error_summary %}
+{% from 'fieldset/macro.jinja' import fieldset %}
+{% from 'input/macro.jinja' import input %}
+{% from 'radios/macro.jinja' import radios %}
+{% from 'textarea/macro.jinja' import textarea %}
+{% from 'django_form_helpers.jinja' import form_error_summary %}
 
 {% block beforeContent %}
-{{ backLink(back_link_params) }}
+  {{ backLink(back_link_params) }}
 {% endblock beforeContent %}
 
 {% block messages %}
@@ -16,27 +19,69 @@
 <div class="nhsuk-grid-row">
   <div class="nhsuk-grid-column-full">
 
-  {% block heading %}
-  <h1 class="nhsuk-heading-l">
-    {% if caption %}
-      <span class="nhsuk-caption-l">{{ caption }}</span>
-    {% endif %}
-    {{title}}
-  </h1>
+    <h1 class="nhsuk-heading-l">
+      {% if caption %}
+        <span class="nhsuk-caption-l">{{ caption }}</span>
+      {% endif %}
+      {{title}}
+    </h1>
 
-  <form action="{{request.path}}" method="POST">
-    <div class="nhsuk-grid-row">
-        <div class="nhsuk-grid-column-two-thirds">
+    <form action="{{request.path}}" method="POST">
+      {{ radios({
+        "idPrefix": form.where_taken.auto_id,
+        "name": form.where_taken.html_name,
+        "fieldset": {
+          "legend": {
+            "text": "Where were the breast x-rays taken?",
+            "classes": "nhsuk-fieldset__legend--m",
+            "isPageHeading": false
+          }
+        },
+        "items": [
+          {
+            "value": form.WhereTaken.SAME_UNIT,
+            "text": form.where_taken_choices[form.WhereTaken.SAME_UNIT]
+          },
+          {
+            "value": form.WhereTaken.ANOTHER_UNIT,
+            "text": form.where_taken_choices[form.WhereTaken.ANOTHER_UNIT]
+          },
+          {
+            "value": form.WhereTaken.ELSEWHERE_UK,
+            "text": form.where_taken_choices[form.WhereTaken.ELSEWHERE_UK]
+          },
+          {
+            "value": form.WhereTaken.OUTSIDE_UK,
+            "text": form.where_taken_choices[form.WhereTaken.OUTSIDE_UK]
+          },
+          {
+            "divider": "or"
+          },
+          {
+            "value": form.WhereTaken.PREFER_NOT_TO_SAY,
+            "text": form.where_taken_choices[form.WhereTaken.PREFER_NOT_TO_SAY]
+          }
+        ]
+      }) }}
 
+      {# Textarea for any other relevant details #}
 
-          {{ button({
-            "text": "Continue"
-          }) }}
+      {{ textarea({
+        "name": form.additional_information.html_name,
+        "rows": "2",
+        "label": {
+          "text": "Additional information (optional)",
+          "classes": "nhsuk-label--m"
+        },
+        "hint": {
+          "text": "For example, the reason for the mammograms and the outcome of the assessment"
+        }
+      }) }}
 
-          {{csrf_input}}
-        </div>
-    </div>
+      {{ button({
+        "text": "Continue"
+      }) }}
+
+      {{csrf_input}}
   </form>
-
-  {% endblock heading %}
   {% endblock page_content %}
