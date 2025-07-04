@@ -46,13 +46,13 @@ class TestEthnicityDetailsForm(SystemTestCase):
         self.then_i_should_be_back_on_the_appointment()
         self.and_the_ethnicity_is_updated_to("Prefer not to say")
 
-    def test_entering_my_own_ethnicity_details(self):
+    def test_entering_ethnicity_description_provided_by_the_participant(self):
         self.given_i_am_viewing_an_appointment()
         self.when_i_click_on_enter_ethnicity_details()
         self.then_i_should_be_on_the_ethnicity_details_form()
 
         self.when_i_select_an_ethnicity("Any other White background")
-        self.and_i_enter_my_own_ethnicity_description(
+        self.and_i_enter_an_ethnicity_description_provided_by_the_participant(
             "any_other_white_background_details", "White ethnicity description"
         )
         self.and_i_submit_the_form()
@@ -61,7 +61,7 @@ class TestEthnicityDetailsForm(SystemTestCase):
 
         self.when_i_click_the_change_ethnicity_link()
         self.when_i_select_an_ethnicity("Any other Asian background")
-        self.and_i_skip_entering_my_own_ethnicity_description()
+        self.and_i_skip_entering_ethnicity_description()
         self.and_i_submit_the_form()
         self.then_i_should_be_back_on_the_appointment()
         self.and_the_ethnicity_is_updated_to(
@@ -130,10 +130,10 @@ class TestEthnicityDetailsForm(SystemTestCase):
     def and_i_prefer_not_to_say(self):
         self.page.get_by_label("Prefer not to say").check()
 
-    def and_i_enter_my_own_ethnicity_description(
+    def and_i_enter_an_ethnicity_description_provided_by_the_participant(
         self, field_name: str, description: str
     ):
         self.page.locator(f"input[name='{field_name}']").fill(description)
 
-    def and_i_skip_entering_my_own_ethnicity_description(self):
+    def and_i_skip_entering_ethnicity_description(self):
         pass
