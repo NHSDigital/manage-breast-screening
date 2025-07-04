@@ -35,5 +35,4 @@ module "frontdoor_endpoint" {
     }
 
   public_dns_zone_rg_name = "rg-hub-dev-uks-public-dns-zones"
-  resource_group_name     = "NOT-USED"
 }
